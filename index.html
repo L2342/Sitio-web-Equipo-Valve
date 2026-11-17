@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steam · Sistema Integrado de Gestión — Valve Corporation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e15;--bg2:#0f1620;--panel:#141d29;--panel2:#1a2635;--line:rgba(102,192,244,.16);--line2:rgba(255,255,255,.07);
+  --blue:#66c0f4;--blue2:#1a9fff;--text:#c7d5e0;--white:#f4f8fb;--muted:#8a97a5;
+  --green:#a4d007;--orange:#f5a623;--red:#ff4d5e;--purple:#a78bfa;--pink:#ff4fd8;--cyan:#22e1ff;
+  --r:14px;--maxw:1240px;
+  --display:'Rajdhani',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{background:var(--bg);color:var(--text);font:15.5px/1.65 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+h1,h2,h3,h4{font-family:var(--display);color:var(--white);line-height:1.1;letter-spacing:.01em}
+.mono{font-family:var(--mono)}
+
+/* ---------- NAV ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:50;height:66px;display:flex;align-items:center;transition:.3s;border-bottom:1px solid transparent}
+.nav.solid{background:rgba(10,14,21,.86);backdrop-filter:blur(14px);border-color:var(--line2)}
+.nav .wrap{display:flex;align-items:center;gap:26px;width:100%;max-width:1400px}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;font-size:22px;color:var(--white);letter-spacing:.14em}
+.brand .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1a9fff,#66c0f4 55%,#a78bfa);display:grid;place-items:center;box-shadow:0 0 24px rgba(26,159,255,.45)}
+.brand small{display:block;font:500 10px/1 var(--mono);letter-spacing:.18em;color:var(--blue);margin-top:3px}
+.nav ul{display:flex;gap:2px;list-style:none;margin-left:auto}
+.nav ul a{font:600 13.5px var(--body);color:#aab6c2;padding:8px 11px;border-radius:8px;transition:.2s}
+.nav ul a:hover,.nav ul a.on{color:var(--white);background:rgba(102,192,244,.1)}
+.btn{display:inline-flex;align-items:center;gap:9px;font:600 14px var(--body);padding:12px 20px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:.2s;white-space:nowrap}
+.btn-primary{background:linear-gradient(90deg,#75b022,#a4d007);color:#0b1405;box-shadow:0 6px 24px rgba(164,208,7,.25)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(164,208,7,.38)}
+.btn-ghost{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.16);color:var(--white)}
+.btn-ghost:hover{border-color:var(--blue);background:rgba(102,192,244,.1)}
+.btn-sm{padding:8px 14px;font-size:13px}
+.burger{display:none;margin-left:auto;background:none;border:0;color:var(--white);cursor:pointer}
+
+/* side rail */
+.rail{position:fixed;left:18px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:6px}
+.rail a{display:flex;align-items:center;gap:10px;font:700 11px var(--mono);color:#56626f;transition:.2s}
+.rail a i{width:18px;height:2px;background:#2b3746;transition:.25s}
+.rail a span{opacity:0;transform:translateX(-6px);transition:.25s;font-family:var(--body);font-weight:600;color:var(--white);font-size:12px;background:rgba(10,14,21,.9);padding:3px 8px;border-radius:6px}
+.rail a:hover span{opacity:1;transform:none}
+.rail a.on{color:var(--blue)}.rail a.on i{width:34px;background:var(--blue);box-shadow:0 0 10px var(--blue)}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;padding:140px 0 70px;overflow:hidden}
+.hero .bg{position:absolute;inset:0;background:url(img/hero.jpg) center/cover;transform:scale(1.06);animation:drift 22s ease-in-out infinite alternate}
+@keyframes drift{to{transform:scale(1.14) translateY(-14px)}}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,21,.35) 0%,rgba(10,14,21,.15) 35%,rgba(10,14,21,.85) 75%,var(--bg) 100%),radial-gradient(ellipse at 20% 60%,rgba(10,14,21,.75),transparent 60%)}
+.hero .wrap{position:relative;z-index:2;width:100%}
+.tag{display:inline-flex;align-items:center;gap:8px;font:700 11.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--blue);padding:7px 13px;border:1px solid var(--line);border-radius:99px;background:rgba(102,192,244,.07)}
+.tag .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.hero h1{font-size:clamp(42px,6.3vw,90px);font-weight:700;margin:22px 0 14px;text-transform:uppercase;letter-spacing:.02em;line-height:.95}
+.hero h1 .grad{background:linear-gradient(90deg,#66c0f4,#22e1ff 40%,#ff4fd8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{max-width:690px;font-size:18px;color:#d3dde6}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 46px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;backdrop-filter:blur(10px)}
+.stat{background:rgba(15,22,32,.78);padding:20px 22px}
+.stat b{display:block;font:700 34px/1 var(--display);color:var(--white)}
+.stat b em{font-style:normal;color:var(--blue)}
+.stat>span{font-size:12.5px;color:var(--muted)}
+
+/* ---------- STORE STRIP ---------- */
+.store{padding:56px 0 30px}
+.store-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px}
+.store-head h3{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:var(--mono)}
+.capsules{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.cap{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:3/4;border:1px solid var(--line2);cursor:default;transition:.35s;background:#000}
+.cap img{width:100%;height:100%;object-fit:cover;transition:.6s;opacity:.88}
+.cap::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.88))}
+.cap:hover{transform:translateY(-6px);border-color:var(--blue);box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 0 1px var(--blue)}
+.cap:hover img{transform:scale(1.08);opacity:1}
+.cap .info{position:absolute;left:14px;right:14px;bottom:12px;z-index:2}
+.cap .yr{font:700 11px var(--mono);color:var(--green)}
+.cap h4{font-size:20px;margin:2px 0}
+.cap p{font-size:11.5px;color:#b7c3cf;line-height:1.4}
+
+/* ---------- SECTIONS ---------- */
+section.sec{position:relative;padding:90px 0 70px;border-top:1px solid var(--line2)}
+.banner{position:relative;height:300px;margin-bottom:-120px;overflow:hidden}
+.banner img{width:100%;height:100%;object-fit:cover;opacity:.55}
+.banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,21,.2),var(--bg))}
+.sec-head{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:start;margin-bottom:44px;position:relative}
+.num{font:700 84px/0.8 var(--display);color:transparent;-webkit-text-stroke:1.5px rgba(102,192,244,.55);letter-spacing:-.02em}
+.eyebrow{font:700 11.5px var(--mono);letter-spacing:.2em;color:var(--blue);text-transform:uppercase}
+.sec-head h2{font-size:clamp(34px,4.4vw,54px);text-transform:uppercase;margin:6px 0 12px}
+.sec-head p{max-width:780px;color:#aebbc7;font-size:16.5px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line2);border-radius:var(--r);padding:24px;position:relative;transition:.3s}
+.card:hover{border-color:var(--line)}
+.card h3{font-size:22px;margin-bottom:8px}
+.card p,.card li{font-size:14.5px;color:#aab7c3}
+.card ul{padding-left:18px}.card li{margin:4px 0}
+.ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;margin-bottom:14px;background:rgba(102,192,244,.1);color:var(--blue);border:1px solid var(--line)}
+.ico svg{width:22px;height:22px}
+.label{font:700 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.pill{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.08em;padding:4px 9px;border-radius:99px;text-transform:uppercase}
+.p-blue{background:rgba(102,192,244,.13);color:var(--blue)}.p-green{background:rgba(164,208,7,.13);color:var(--green)}
+.p-orange{background:rgba(245,166,35,.14);color:var(--orange)}.p-red{background:rgba(255,77,94,.14);color:var(--red)}
+.p-purple{background:rgba(167,139,250,.14);color:var(--purple)}.p-yellow{background:rgba(250,204,21,.14);color:#facc15}
+.quote{margin-top:34px;display:grid;grid-template-columns:auto 1fr;gap:20px;padding:26px 30px;border-radius:var(--r);background:linear-gradient(90deg,rgba(26,159,255,.12),rgba(167,139,250,.06));border:1px solid var(--line);border-left:3px solid var(--blue)}
+.quote .q{font:700 64px/0.7 var(--display);color:var(--blue)}
+.quote p{font:600 20px/1.45 var(--display);color:var(--white);letter-spacing:.01em}
+.quote .label{display:block;margin-bottom:6px;color:var(--blue)}
+.docbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:26px}
+.docbtn{display:inline-flex;align-items:center;gap:8px;font:600 13px var(--body);padding:9px 14px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:var(--white);cursor:pointer;transition:.2s}
+.docbtn:hover{border-color:var(--blue);background:rgba(102,192,244,.1)}
+.docbtn svg{width:15px;height:15px;color:var(--blue)}
+.next{display:flex;align-items:center;gap:12px;margin-top:40px;font-size:13.5px;color:var(--muted)}
+.next a{color:var(--blue);font-weight:600}.next a:hover{text-decoration:underline}
+.next::before{content:"";flex:0 0 40px;height:1px;background:var(--blue)}
+
+/* figure */
+.fig{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--line2);cursor:zoom-in;background:#0d131c}
+.fig img{width:100%;transition:.5s}
+.fig:hover img{transform:scale(1.02)}
+.fig figcaption{position:absolute;left:0;right:0;bottom:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:12.5px;color:#dbe4ec;display:flex;justify-content:space-between}
+.fig .zoom{position:absolute;top:12px;right:12px;background:rgba(10,14,21,.8);border:1px solid var(--line);padding:6px 10px;border-radius:8px;font:700 11px var(--mono);color:var(--blue)}
+
+/* alcance */
+.scope{display:grid;grid-template-columns:1.25fr 1fr;gap:26px;align-items:stretch}
+.scope .big{font:600 24px/1.45 var(--display);color:var(--white)}
+.eco{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+.eco div{padding:16px;border-radius:12px;background:rgba(164,208,7,.07);border:1px solid rgba(164,208,7,.2);text-align:center}
+.eco b{display:block;font:700 26px var(--display);color:var(--green)}
+.eco span{font-size:12.5px;color:#b9c7a8}
+
+/* timeline */
+.timeline{position:relative;display:grid;grid-template-columns:repeat(8,1fr);gap:0;margin-top:10px}
+.timeline::before{content:"";position:absolute;left:0;right:0;top:27px;height:2px;background:linear-gradient(90deg,var(--blue2),var(--purple),var(--pink))}
+.tl{padding:0 10px;position:relative}
+.tl .dotx{width:16px;height:16px;border-radius:50%;background:var(--bg);border:3px solid var(--blue);margin:20px 0 18px;box-shadow:0 0 14px var(--blue)}
+.tl b{font:700 26px var(--display);color:var(--white)}
+.tl h4{font-size:16px;color:var(--blue);margin:2px 0 6px;font-family:var(--body);font-weight:700}
+.tl p{font-size:13px;color:#9eabb8;line-height:1.5}
+
+/* org */
+.paradigm{display:grid;grid-template-columns:1fr 1.1fr;gap:26px;align-items:stretch}
+.flat{display:flex;gap:10px;align-items:center;justify-content:center;padding:30px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line2)}
+.pyr{display:flex;flex-direction:column;align-items:center;gap:6px;opacity:.5}
+.pyr span,.flatrow span{display:block;height:16px;border-radius:4px;background:#3a4656}
+.flatrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:260px}
+.flatrow span{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--blue2),var(--purple));box-shadow:0 0 12px rgba(26,159,255,.4)}
+.arch{border-top:3px solid var(--c,var(--blue))}
+.tshape{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.troll{padding:20px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line2);display:flex;flex-direction:column}
+.troll h4{font-size:18px;margin:10px 0 8px;min-height:42px}
+.troll .tbar{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--purple));margin:10px 0 6px}
+.troll .vbar{width:6px;height:40px;border-radius:3px;background:var(--green);margin:0 auto 4px}
+.troll small{font-size:12.5px;color:#9eabb8;display:block;margin-top:4px}
+.troll small b{color:var(--white)}
+
+/* tables */
+.tbl-wrap{overflow:auto;border-radius:var(--r);border:1px solid var(--line2);background:var(--panel)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--blue);text-align:left;padding:14px 16px;background:#101823;border-bottom:1px solid var(--line);position:sticky;top:0}
+td{padding:14px 16px;border-bottom:1px solid var(--line2);vertical-align:top;color:#b8c5d1}
+tr:last-child td{border-bottom:0}
+tbody tr{transition:.2s}tbody tr:hover{background:rgba(102,192,244,.05)}
+td strong{color:var(--white);font-weight:600}
+.lvl{display:inline-block;min-width:74px;text-align:center;font:700 11.5px var(--mono);padding:6px 9px;border-radius:7px}
+.l-ext{background:rgba(255,77,94,.18);color:#ff7b88;border:1px solid rgba(255,77,94,.4)}
+.l-alto{background:rgba(245,120,35,.16);color:#ffa45c;border:1px solid rgba(245,120,35,.4)}
+.l-medio{background:rgba(250,204,21,.13);color:#fcd34d;border:1px solid rgba(250,204,21,.35)}
+.l-bajo{background:rgba(74,222,128,.12);color:#6ee7a0;border:1px solid rgba(74,222,128,.35)}
+
+/* process */
+.pmap{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;align-items:start}
+.proc{border-radius:var(--r);background:var(--panel);border:1px solid var(--line2);overflow:hidden;margin-bottom:10px;transition:.3s}
+.proc summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:16px 18px}
+.proc summary::-webkit-details-marker{display:none}
+.proc .n{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font:700 18px var(--display);color:#0a0e15;background:var(--c)}
+.proc summary h4{font-size:18px}
+.proc summary .pill{margin-top:3px}
+.proc .chev{transition:.3s;color:var(--muted)}
+.proc[open]{border-color:var(--c)}
+.proc[open] .chev{transform:rotate(180deg)}
+.proc .body{padding:0 18px 18px 70px;font-size:14px;color:#aab7c3}
+.io{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.io div{padding:12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line2)}
+.io .label{display:block;margin-bottom:4px}
+
+/* PEPSU */
+.pepsu{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative}
+.pep{padding:22px 18px;background:var(--panel);border:1px solid var(--line2);position:relative}
+.pep:first-child{border-radius:var(--r) 0 0 var(--r)}.pep:last-child{border-radius:0 var(--r) var(--r) 0}
+.pep:not(:last-child)::after{content:"";position:absolute;right:-11px;top:50%;width:20px;height:20px;background:var(--panel);border-top:1px solid var(--line);border-right:1px solid var(--line);transform:translateY(-50%) rotate(45deg);z-index:2}
+.pep .letter{font:700 46px/1 var(--display);color:var(--c)}
+.pep h4{font-size:17px;margin:4px 0 10px;text-transform:uppercase;letter-spacing:.06em}
+.pep li{font-size:13.5px;color:#aab7c3;list-style:none;padding-left:14px;position:relative;margin:4px 0}
+.pep li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--c)}
+
+/* stakeholders */
+.stake{display:grid;grid-template-columns:1fr 1.3fr;gap:24px;align-items:start}
+.sgrid{position:relative;padding:20px 20px 46px 50px;background:var(--panel);border:1px solid var(--line2);border-radius:var(--r)}
+.sgrid .cells{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,64px);gap:4px}
+.sgrid .cell{border-radius:8px;background:rgba(255,255,255,.025);display:grid;place-items:center;text-align:center;font-size:12px;font-weight:600;color:var(--white);padding:4px}
+.sgrid .cell.on{background:var(--bgc);border:1px solid var(--bdc)}
+.sgrid .ax-y{position:absolute;left:8px;top:50%;transform:translateY(-50%) rotate(-90deg);font:700 10.5px var(--mono);letter-spacing:.2em;color:var(--blue)}
+.sgrid .ax-x{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font:700 10.5px var(--mono);letter-spacing:.2em;color:var(--blue)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--line2);color:var(--white)}
+
+/* RACI */
+.raci td.c{text-align:center;font:700 13px var(--mono);color:#0a0e15;border-left:1px solid rgba(0,0,0,.25)}
+.r-R{background:#7dd3fc!important}.r-A{background:#f0abfc!important}.r-RA{background:#e9a8d6!important}.r-C{background:#fde68a!important}.r-I{background:#3a4555!important;color:#c7d5e0!important}.r-CI{background:linear-gradient(90deg,#fde68a 50%,#3a4555 50%)!important}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:13px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:16px;height:16px;border-radius:4px;display:inline-block}
+
+/* PESTEL */
+.pestel{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pe{position:relative;padding:26px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line2);overflow:hidden;transition:.3s}
+.pe:hover{transform:translateY(-4px);border-color:var(--c)}
+.pe .L{position:absolute;right:14px;top:-6px;font:700 110px/1 var(--display);color:var(--c);opacity:.1}
+.pe h3{font-size:24px;color:var(--c);margin-bottom:10px}
+.pe p{font-size:14.5px;color:#b3c0cc;position:relative}
+
+/* env */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.filters button{font:600 13px var(--body);padding:8px 14px;border-radius:99px;border:1px solid var(--line2);background:rgba(255,255,255,.03);color:#b7c3cf;cursor:pointer;transition:.2s}
+.filters button.on,.filters button:hover{background:var(--blue);color:#06101a;border-color:var(--blue)}
+.meters{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:22px}
+.meter{padding:18px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line2)}
+.meter b{font:700 30px var(--display);color:var(--green)}
+.meter .bar{height:6px;border-radius:3px;background:#243142;margin:10px 0 8px;overflow:hidden}
+.meter .bar i{display:block;height:100%;background:linear-gradient(90deg,#75b022,#a4d007);width:0;transition:1.4s cubic-bezier(.2,.8,.2,1)}
+.meter span{font-size:12.5px;color:#9eabb8}
+.medio{font:700 11.5px var(--mono)}
+
+/* risk tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;border-bottom:1px solid var(--line2);padding-bottom:0}
+.tabs button{font:600 14px var(--body);padding:12px 16px;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;margin-bottom:-1px}
+.tabs button.on{color:var(--white);border-color:var(--blue)}
+.tabs button:hover{color:var(--white)}
+.pane{display:none;animation:fade .4s}.pane.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+.heat{display:grid;grid-template-columns:1.05fr 1fr;gap:24px;align-items:start}
+.hm{position:relative;padding:18px 18px 40px 44px;background:#0c121b;border:1px solid var(--line);border-radius:var(--r);box-shadow:inset 0 0 60px rgba(26,159,255,.06)}
+.hm .cells{display:grid;grid-template-columns:22px repeat(5,1fr);gap:5px}.hm .hl{display:grid;place-items:center;font:700 12px var(--mono);color:var(--muted)}
+.hm .cell{aspect-ratio:1.25;border-radius:8px;position:relative;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:5px;padding:4px}
+.hm .rk{font:700 11.5px var(--mono);padding:5px 7px;border-radius:7px;background:rgba(10,14,21,.85);color:var(--white);border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.2s}
+.hm .rk:hover,.hm .rk.on{background:var(--white);color:#0a0e15;transform:scale(1.12)}
+.hm .ylab,.hm .xlab{position:absolute;font:700 12px var(--mono);color:var(--muted)}
+.hm .axy{position:absolute;left:12px;top:50%;writing-mode:vertical-rl;transform:translateY(-50%) rotate(180deg);font:700 10.5px var(--mono);letter-spacing:.2em;color:var(--blue)}
+.hm .axx{position:absolute;bottom:10px;left:55%;transform:translateX(-50%);font:700 10.5px var(--mono);letter-spacing:.2em;color:var(--blue)}
+.rdetail{padding:24px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line2);min-height:220px}
+.rdetail h3{font-size:28px}
+.rlist{margin-top:14px;display:grid;gap:6px}
+.rlist button{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;font:500 13.5px var(--body);color:#c2ced9;padding:9px 12px;border-radius:9px;background:rgba(255,255,255,.03);border:1px solid var(--line2);cursor:pointer}
+.rlist button:hover,.rlist button.on{border-color:var(--blue);color:var(--white)}
+.bars{display:grid;gap:12px}
+.brow{display:grid;grid-template-columns:240px 1fr 70px;gap:14px;align-items:center;font-size:13.5px}
+.brow .track{position:relative;height:22px;border-radius:6px;background:#1c2736;overflow:hidden}
+.brow .inh,.brow .res{position:absolute;left:0;top:0;bottom:0;border-radius:6px;width:0;transition:1.3s cubic-bezier(.2,.8,.2,1)}
+.brow .inh{background:linear-gradient(90deg,rgba(255,77,94,.35),rgba(255,77,94,.65))}
+.brow .res{background:linear-gradient(90deg,#1a9fff,#66c0f4);height:10px;top:6px;margin-left:0}
+.brow .val{font:700 13px var(--mono);color:var(--white);text-align:right}
+.treat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.treat .card h4{font-size:18px;margin-bottom:10px}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line2)}
+.kv b{color:var(--white);font-family:var(--mono);font-size:12.5px;text-align:right}
+
+
+/* controles */
+.ctls{display:grid;gap:14px}
+.ctl{display:grid;grid-template-columns:230px 130px 1fr 1.5fr 1fr;border-radius:var(--r);overflow:hidden;background:var(--panel);border:1px solid var(--line2);border-left:4px solid var(--c);transition:.3s}
+.ctl:hover{border-color:var(--c);transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.ctl>div{padding:18px}
+.ctl-img{position:relative;background:center/cover;min-height:150px;display:flex;align-items:flex-end}
+.ctl-img::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,21,.15),rgba(10,14,21,.92))}
+.ctl-img h4{position:relative;font-size:19px}
+.ctl-n{position:absolute;top:12px;left:14px;z-index:1;font:700 34px/1 var(--display);color:var(--c);text-shadow:0 0 18px var(--c)}
+.ctl-asp{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;border-right:1px solid var(--line2)}
+.ctl-asp b{font:700 17px var(--display);color:var(--c);letter-spacing:.04em}
+.ctl-ico{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid var(--c);color:var(--c);box-shadow:0 0 18px color-mix(in srgb,var(--c) 35%,transparent)}
+.ctl-ico svg{width:24px;height:24px}
+.ctl-obj p,.ctl-kpi p{font-size:14px;color:#c2ced9;margin-top:6px}
+.ctl-kpi{background:color-mix(in srgb,var(--c) 7%,transparent);border-left:1px solid var(--line2)}
+.ctl-kpi p{color:var(--white);font-weight:600}
+.ctl-list ul{list-style:none;margin-top:6px;display:grid;gap:8px}
+.ctl-list li{display:flex;gap:10px;font-size:13.5px;color:#c2ced9;align-items:flex-start}
+.cn{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font:700 11px var(--mono);background:var(--c);color:#0a0e15}
+@media (max-width:1180px){.ctl{grid-template-columns:200px 1fr 1fr}.ctl-asp{border-right:0}.ctl-list{grid-column:1/-1}.ctl-kpi{grid-column:1/-1;border-left:0}.ctl-obj{grid-column:2/-1}}
+@media (max-width:640px){.ctl{grid-template-columns:1fr}.ctl>div{grid-column:1/-1!important}.ctl-asp{flex-direction:row;justify-content:flex-start}}
+/* infra */
+.net{display:grid;grid-template-columns:1.6fr 1fr;gap:22px}
+.mapbox{position:relative;border-radius:var(--r);overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#0f1d2e,#070b11);border:1px solid var(--line)}
+.mapbox svg{display:block;width:100%;height:auto}
+.mapbox .tip{position:absolute;pointer-events:none;background:rgba(10,14,21,.95);border:1px solid var(--blue);border-radius:10px;padding:10px 12px;font-size:12.5px;max-width:260px;opacity:0;transition:opacity .15s;z-index:3}
+.mapbox .tip b{color:var(--white);font-size:14px}
+.node{cursor:pointer}
+.node circle.halo{animation:ping 2.4s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes ping{0%{transform:scale(.6);opacity:.8}100%{transform:scale(2.4);opacity:0}}
+.reg{display:grid;gap:10px}
+.reg .row{display:grid;grid-template-columns:110px 1fr 56px;gap:10px;align-items:center;font-size:13px}
+.reg .track{height:8px;border-radius:4px;background:#1c2736;overflow:hidden}
+.reg .track i{display:block;height:100%;width:0;border-radius:4px;transition:1.3s}
+
+/* audit */
+.phases{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.phase{padding:18px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line2);position:relative;overflow:hidden}
+.phase .bigN{font:700 40px/1 var(--display);color:rgba(255,255,255,.08);position:absolute;right:12px;top:8px}
+.phase h4{font-size:17px;margin:8px 0 4px}
+.phase p{font-size:12.5px;color:#9eabb8}
+.find{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.find .card{border-left:3px solid var(--c)}
+
+/* docs center */
+.dc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.doc{border-radius:var(--r);overflow:hidden;background:var(--panel);border:1px solid var(--line2);cursor:pointer;transition:.3s;display:flex;flex-direction:column}
+.doc:hover{transform:translateY(-5px);border-color:var(--blue);box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.doc .th{aspect-ratio:16/10;background:#0d131c center top/cover no-repeat;position:relative;border-bottom:1px solid var(--line2)}
+.doc .th.icon{display:grid;place-items:center;background:linear-gradient(135deg,#12324a,#1a1f3a)}
+.doc .th.icon svg{width:46px;height:46px;color:var(--blue)}
+.doc .th .ty{position:absolute;top:10px;left:10px;font:700 10.5px var(--mono);padding:4px 8px;border-radius:6px;background:rgba(10,14,21,.9);color:var(--white);border:1px solid var(--line)}
+.doc .meta{padding:14px 16px 16px}
+.doc h4{font-family:var(--body);font-size:14.5px;font-weight:600;line-height:1.35;color:var(--white)}
+.doc small{display:block;font:500 11.5px var(--mono);color:var(--muted);margin-top:6px;word-break:break-word}
+
+/* team */
+.team{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.mem{text-align:center;padding:24px 14px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line2);transition:.3s}
+.mem:hover{border-color:var(--blue);transform:translateY(-4px)}
+.av{width:68px;height:68px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font:700 24px var(--display);color:#0a0e15;background:var(--c);box-shadow:0 0 0 4px rgba(255,255,255,.04),0 0 24px var(--c)}
+.mem h4{font-family:var(--body);font-size:14px;font-weight:600;line-height:1.35}
+.mem span{font:500 11px var(--mono);color:var(--muted)}
+
+footer{padding:50px 0;border-top:1px solid var(--line2);color:var(--muted);font-size:13px;background:#070a10}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:100;background:rgba(4,6,10,.94);backdrop-filter:blur(6px);display:none;flex-direction:column}
+.lb.on{display:flex}
+.lb-top{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line2)}
+.lb-top h4{font-family:var(--body);font-size:15px;font-weight:600}
+.lb-top>div:first-child{min-width:0;flex:1 1 200px}
+.lb-top small{color:var(--muted);font-family:var(--mono);font-size:12px}
+.lb-close{background:rgba(255,255,255,.06);border:1px solid var(--line2);color:var(--white);width:38px;height:38px;border-radius:9px;cursor:pointer;font-size:20px}
+.lb-body{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:16px}
+.lb-body img{max-width:min(1500px,100%);border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6);background:#fff}
+.lb-nav{display:flex;gap:8px;align-items:center}
+.lb-nav button{background:rgba(255,255,255,.06);border:1px solid var(--line2);color:var(--white);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+.lb-nav button:disabled{opacity:.3;cursor:default}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media (max-width:1180px){.nav ul{display:none}.burger{display:block}.nav ul.open{display:flex;flex-direction:column;position:absolute;top:66px;left:0;right:0;background:rgba(10,14,21,.97);padding:14px;border-bottom:1px solid var(--line2)}.rail{display:none}.capsules{grid-template-columns:repeat(3,1fr)}.tshape,.g5,.meters,.phases{grid-template-columns:repeat(2,1fr)}.team{grid-template-columns:repeat(3,1fr)}.dc-grid{grid-template-columns:repeat(3,1fr)}.timeline{grid-template-columns:repeat(4,1fr);row-gap:24px}.timeline::before{display:none}}
+@media (max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}.g2,.g3,.g4,.scope,.paradigm,.pmap,.stake,.heat,.net,.find,.treat,.pestel{grid-template-columns:1fr}.pepsu{grid-template-columns:1fr}.pep:not(:last-child)::after{display:none}.pep{border-radius:0!important}.dc-grid{grid-template-columns:repeat(2,1fr)}.num{font-size:56px}.brow{grid-template-columns:1fr;gap:4px}.btn-nav-cta{display:none}}
+@media (max-width:540px){.lb-top>div:first-child{flex-basis:100%}.wrap{padding:0 18px}.capsules,.tshape,.g5,.meters,.phases,.team,.dc-grid,.timeline{grid-template-columns:1fr 1fr}.sec-head{grid-template-columns:1fr}.eco{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <a href="#inicio" class="brand">
+      <span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06101a" stroke-width="2.2" stroke-linecap="round"><path d="M6 11h4M8 9v4"/><circle cx="15.5" cy="10.5" r=".6" fill="#06101a"/><circle cx="17.5" cy="12.5" r=".6" fill="#06101a"/><path d="M7.5 6h9a4.5 4.5 0 0 1 4.4 5.4l-1 5a2.6 2.6 0 0 1-4.5 1.2L13.5 15h-3l-1.9 2.6a2.6 2.6 0 0 1-4.5-1.2l-1-5A4.5 4.5 0 0 1 7.5 6Z"/></svg></span>
+      <span>STEAM<small>VALVE · SIG</small></span>
+    </a>
+    <ul id="menu">
+      <li><a href="#alcance">Alcance</a></li>
+      <li><a href="#historia">Historia</a></li>
+      <li><a href="#organizacion">Organización</a></li>
+      <li><a href="#procesos">Procesos</a></li>
+      <li><a href="#valor">Cadena de valor</a></li>
+      <li><a href="#pestel">PESTEL</a></li>
+      <li><a href="#ambiente">Ambiente</a></li>
+      <li><a href="#riesgos">Riesgos</a></li>
+      <li><a href="#controles">Controles</a></li>
+      <li><a href="#infraestructura">Red</a></li>
+      <li><a href="#auditoria">Auditoría</a></li>
+    </ul>
+    <a href="#documentos" class="btn btn-primary btn-sm btn-nav-cta">Centro documental</a>
+    <button class="burger" id="burger" aria-label="Menú"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</nav>
+
+<div class="rail" id="rail"></div>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="inicio" data-n="00" data-t="Inicio">
+  <div class="bg"></div>
+  <div class="wrap">
+    <span class="tag"><span class="dot"></span>Proyecto académico · Grupo 03 · Sistema Integrado de Gestión</span>
+    <h1>El universo <span class="grad">Steam</span><br>de Valve Corporation</h1>
+    <p class="lead">La tienda digital y plataforma de distribución de videojuegos para ordenadores <strong>Windows, Mac y Linux</strong>. Analizamos sus procesos, su organización sin jefes, sus riesgos, su red global y su impacto ambiental, con todos los documentos del proyecto en un solo lugar.</p>
+    <div class="cta">
+      <a href="#alcance" class="btn btn-primary">▶&nbsp; Explorar el sistema</a>
+      <a href="#documentos" class="btn btn-ghost">Ver los 24 documentos</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b class="count" data-to="1996">1996</b><span>Fundación de Valve en Kirkland, Washington</span></div>
+      <div class="stat"><b class="count" data-to="2003">2003</b><span>Lanzamiento de Steam (septiembre)</span></div>
+      <div class="stat"><b><span class="count" data-to="32000">32000</span><em>+</em></b><span>Estudios desarrolladores en Steamworks</span></div>
+      <div class="stat"><b><em>US$</em><span class="count" data-to="6000">6000</span>M</b><span>Valor estimado del mercado de skins</span></div>
+      <div class="stat"><b><span class="count" data-to="146">146</span> <em>Tbps</em></b><span>Pico máximo de tráfico (2023)</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ STORE STRIP ============ -->
+<div class="store">
+  <div class="wrap">
+    <div class="store-head"><h3>// Destacados del ecosistema Valve</h3><span class="label">Juegos · Hardware · Plataforma</span></div>
+    <div class="capsules">
+      <div class="cap"><img src="img/corridor.jpg" alt="Escena de videojuego de ciencia ficción en primera persona"><div class="info"><span class="yr">1998</span><h4>Half-Life</h4><p>Más de 50 premios a Juego del Año. Abrió su motor a los mods.</p></div></div>
+      <div class="cap"><img src="img/city.jpg" alt="Ciudad nocturna estilo videojuego"><div class="info"><span class="yr">MOD → FRANQUICIA</span><h4>Counter-Strike</h4><p>Nació como mod de la comunidad y Valve lo integró a su portafolio.</p></div></div>
+      <div class="cap"><img src="img/hero.jpg" alt="Paisaje retro de videojuego"><div class="info"><span class="yr">2003</span><h4>Steam</h4><p>Parches automáticos y freno a la piratería: nace la distribución digital.</p></div></div>
+      <div class="cap"><img src="img/space.jpg" alt="Planeta en el espacio, arte de videojuego"><div class="info"><span class="yr">2019 · 2020</span><h4>Valve Index · Alyx</h4><p>Realidad virtual con seguimiento capacitivo de dedos.</p></div></div>
+      <div class="cap"><img src="img/racing.jpg" alt="Carretera neón de videojuego de carreras"><div class="info"><span class="yr">2022</span><h4>Steam Deck</h4><p>Consola portátil con SteamOS y la capa Proton.</p></div></div>
+      <div class="cap"><img src="img/fantasy.jpg" alt="Castillo y montañas de videojuego de fantasía"><div class="info"><span class="yr">US$6.000M+</span><h4>Mercado comunitario</h4><p>Economía virtual de CS2 y Dota 2 con Steam Workshop.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 01 ALCANCE ============ -->
+<section class="sec" id="alcance" data-n="01" data-t="Alcance">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">01</div><div><span class="eyebrow">Marco del sistema</span><h2>Alcance del proyecto</h2><p>Qué estudiamos de Steam y por qué su modelo digital importa para la gestión ambiental.</p></div></div>
+    <div class="scope reveal">
+      <div class="card">
+        <span class="label">Declaración de alcance</span>
+        <p class="big" style="margin-top:12px">Analizar el funcionamiento de la plataforma Steam como sistema de distribución digital de videojuegos, evaluando sus principales procesos y sistemas, y estudiar su impacto ambiental.</p>
+        <div class="eco">
+          <div><b>− Papel</b><span>Sin manuales ni cajas impresas</span></div>
+          <div><b>− Plástico</b><span>Sin discos ni empaques físicos</span></div>
+          <div><b>− Transporte</b><span>Sin envío físico de videojuegos</span></div>
+        </div>
+      </div>
+      <div class="grid" style="gap:14px">
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div><h3>Procesos</h3><p>Estratégicos, misionales y de apoyo: desde el desarrollo de videojuegos hasta el soporte al usuario.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 7v6c0 4.5 3.4 7.6 8 8 4.6-.4 8-3.5 8-8V7l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Sistemas</h3><p>SST (GTC 45), Calidad (ISO 9001), Seguridad de la información (ISO 27001) y Ambiental (ISO 14001).</p></div>
+      </div>
+    </div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>La distribución digital reduce el uso de papel, plástico y transporte físico, y con ello la generación de residuos.</p></div></div>
+    <div class="docbar"><span class="label">Documentos:</span><button class="docbtn" data-doc="alcance-m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Alcance manuscrito</button><button class="docbtn" data-doc="alcance-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Alcance digital</button></div>
+    <div class="next">Conexión siguiente: <a href="#historia">30 años de historia de Valve →</a></div>
+  </div>
+</section>
+
+<!-- ============ 02 HISTORIA ============ -->
+<div class="banner"><img src="img/corridor.jpg" alt=""></div>
+<section class="sec" id="historia" data-n="02" data-t="Historia" style="border-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">02</div><div><span class="eyebrow">Trayectoria 1996 – 2026</span><h2>Historia y evolución</h2><p>Fundada por los ex-empleados de Microsoft Gabe Newell y Mike Harrington con capital propio, Valve tuvo desde el primer día independencia total frente a los editores tradicionales.</p></div></div>
+    <div class="timeline reveal">
+      <div class="tl"><div class="dotx"></div><b>1996</b><h4>Fundación</h4><p>Nace en Kirkland, Washington, con estructura plana desde el inicio.</p></div>
+      <div class="tl"><div class="dotx"></div><b>1998</b><h4>Half-Life</h4><p>Revoluciona el entretenimiento interactivo; su motor abierto da origen a Counter-Strike.</p></div>
+      <div class="tl"><div class="dotx"></div><b>2003</b><h4>Steam</h4><p>Plataforma propia para parches automáticos y contra la piratería.</p></div>
+      <div class="tl"><div class="dotx"></div><b>2004</b><h4>Half-Life 2</h4><p>Su lanzamiento obligatorio vía Steam impulsa la plataforma.</p></div>
+      <div class="tl"><div class="dotx"></div><b>2019</b><h4>Valve Index</h4><p>Visor de realidad virtual con seguimiento capacitivo de dedos.</p></div>
+      <div class="tl"><div class="dotx"></div><b>2020</b><h4>Half-Life: Alyx</h4><p>Apuesta insignia por la realidad virtual.</p></div>
+      <div class="tl"><div class="dotx"></div><b>2022</b><h4>Steam Deck</h4><p>Consola portátil con SteamOS y Proton para jugar la biblioteca de PC.</p></div>
+      <div class="tl"><div class="dotx"></div><b>2026</b><h4>Antimonopolio</h4><p>Demanda colectiva de desarrolladores contra la tasa del 30% y la paridad de precios.</p></div>
+    </div>
+    <div class="grid g3 reveal" style="margin-top:40px">
+      <div class="card"><span class="pill p-green">Modelo de ingresos</span><h3 style="margin-top:12px">Comisión escalonada</h3><p>30% estándar, 25% tras US$10M y 20% tras US$50M de facturación por juego.</p></div>
+      <div class="card"><span class="pill p-purple">Economía virtual</span><h3 style="margin-top:12px">US$6.000M en skins</h3><p>La economía cosmética de CS2 y Dota 2 genera grandes flujos de caja y vigilancia regulatoria por las loot boxes.</p></div>
+      <div class="card"><span class="pill p-orange">Desafío legal</span><h3 style="margin-top:12px">+32.000 estudios</h3><p>La demanda colectiva argumenta que la posición dominante de Steam limita la libre competencia.</p></div>
+    </div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>Valve pasó de crear un juego de disparos a dominar la distribución digital en PC y diseñar su propio hardware.</p></div></div>
+    <div class="docbar"><span class="label">Documento:</span><button class="docbtn" data-doc="historia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Historia y procesos de Valve (Word · 5 págs.)</button></div>
+    <div class="next">Conexión siguiente: <a href="#organizacion">una empresa sin jefes →</a></div>
+  </div>
+</section>
+
+<!-- ============ 03 ORGANIZACIÓN ============ -->
+<section class="sec" id="organizacion" data-n="03" data-t="Organización">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">03</div><div><span class="eyebrow">Arquitectura empresarial</span><h2>Organización plana</h2><p>En 1996 Valve eliminó por completo la estructura piramidal. Su manual para empleados consagra un diseño donde nadie reporta a nadie, ni siquiera al fundador Gabe Newell.</p></div></div>
+    <div class="paradigm reveal">
+      <div class="flat">
+        <div class="pyr"><span style="width:30px"></span><span style="width:70px"></span><span style="width:110px"></span><span style="width:150px"></span><small class="label" style="margin-top:8px">Tradicional</small></div>
+        <div style="font:700 28px var(--display);color:var(--blue);padding:0 10px 30px">→</div>
+        <div style="text-align:center"><div class="flatrow"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><small class="label" style="display:block;margin-top:14px;color:var(--blue)">Valve · “Boss-free”</small></div>
+      </div>
+      <div class="grid" style="gap:12px">
+        <div class="card"><h3>Autonomía radical</h3><p>El 100% del tiempo de los empleados es autogestionado. No existe asignación de tareas impuesta.</p></div>
+        <div class="card"><h3>Conducción colectiva</h3><p>La empresa es un vehículo donde todos comparten el volante, alejándose de los riesgos y hacia las oportunidades.</p></div>
+        <div class="card"><h3>Votando con las ruedas</h3><p>Los empleados mueven sus escritorios rodantes hacia los proyectos de mayor valor para el cliente.</p></div>
+      </div>
+    </div>
+    <h3 class="reveal" style="font-size:28px;margin:54px 0 18px;text-transform:uppercase">Triple arquitectura</h3>
+    <div class="grid g3 reveal">
+      <div class="card arch" style="--c:var(--blue)"><span class="label">Organizacional</span><h3 style="margin-top:8px">Estructura y gobierno</h3><ul><li>Escritorios con ruedas y movilidad física</li><li>“Votar con los pies” para asignar talento</li><li>Camarillas (<em>Cabals</em>) multidisciplinarias temporales</li></ul></div>
+      <div class="card arch" style="--c:var(--purple)"><span class="label">Técnica</span><h3 style="margin-top:8px">Infraestructura digital</h3><ul><li>Motores Source y Source 2</li><li>CDN global y Steam Cloud con mitigación DDoS</li><li>Steamworks API/SDK para +32.000 devs</li><li>Proton y SteamOS (DirectX → Vulkan)</li></ul></div>
+      <div class="card arch" style="--c:var(--green)"><span class="label">Negocios</span><h3 style="margin-top:8px">Mercado de dos lados</h3><ul><li>Conecta desarrolladores y jugadores</li><li>Más títulos atraen más jugadores, y viceversa</li><li>Economías virtuales multimillonarias</li></ul></div>
+    </div>
+    <h3 class="reveal" style="font-size:28px;margin:54px 0 6px;text-transform:uppercase">Talento “en forma de T”</h3>
+    <p class="reveal" style="color:#9eabb8;margin-bottom:18px;max-width:760px">Máxima maestría en una especialidad (barra vertical) más amplia capacidad generalista (barra horizontal). La compensación se define por evaluación anónima entre pares (<em>Peer Review</em> y <em>Stack Ranking</em>).</p>
+    <div class="tshape reveal">
+      <div class="troll"><div class="tbar"></div><div class="vbar"></div><h4>Ingeniero de software</h4><small><b>Profundidad:</b> C++ e ingeniería de sistemas escalables.</small><small><b>Amplitud:</b> diseño de juegos y usabilidad.</small><small style="margin-top:10px">Aporta: Source 2, Steam Cloud, VAC, Steamworks.</small></div>
+      <div class="troll"><div class="tbar"></div><div class="vbar"></div><h4>Artista y diseñador 3D</h4><small><b>Profundidad:</b> modelado 3D, animación y render en tiempo real.</small><small><b>Amplitud:</b> narrativa visual y lenguaje cinematográfico.</small><small style="margin-top:10px">Aporta: arte de franquicias, skins e interfaces.</small></div>
+      <div class="troll"><div class="tbar"></div><div class="vbar"></div><h4>Ingeniero de hardware</h4><small><b>Profundidad:</b> mecatrónica y hardware embebido.</small><small><b>Amplitud:</b> firmware con SteamOS y ergonomía.</small><small style="margin-top:10px">Aporta: Steam Deck y Valve Index.</small></div>
+      <div class="troll"><div class="tbar"></div><div class="vbar"></div><h4>Economista y analista</h4><small><b>Profundidad:</b> microeconomía, econometría y Big Data.</small><small><b>Amplitud:</b> psicología del consumidor y teoría de juegos.</small><small style="margin-top:10px">Aporta: equilibrio del mercado de skins.</small></div>
+      <div class="troll"><div class="tbar"></div><div class="vbar"></div><h4>Legal y plataforma</h4><small><b>Profundidad:</b> propiedad intelectual y finanzas.</small><small><b>Amplitud:</b> industria indie/AAA y antimonopolio.</small><small style="margin-top:10px">Aporta: contratos y comisiones del 20–30%.</small></div>
+    </div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>La jerarquía es eficiente para la ejecución repetitiva, pero frena la innovación acelerada. Valve organiza el trabajo por mérito, no por mandato.</p></div></div>
+    <div class="docbar"><span class="label">Documentos:</span><button class="docbtn" data-doc="valve"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Presentación Matriz Valve</button><button class="docbtn" data-doc="roles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Roles y procesos (Excel)</button></div>
+    <div class="next">Conexión siguiente: <a href="#procesos">cómo se convierte esto en procesos →</a></div>
+  </div>
+</section>
+
+<!-- ============ 04 PROCESOS ============ -->
+<div class="banner"><img src="img/city.jpg" alt=""></div>
+<section class="sec" id="procesos" data-n="04" data-t="Procesos" style="border-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">04</div><div><span class="eyebrow">Arquitectura operativa</span><h2>Mapa de procesos</h2><p>Propósito: crear experiencias de entretenimiento excepcionales a través de juegos, servicios y tecnologías innovadoras. Procesos estratégicos, misionales y de apoyo conectan a proveedores con clientes.</p></div></div>
+    <div class="pmap reveal">
+      <figure class="fig" data-doc="mapa-steam"><img src="docs/mapa-procesos-steam.jpg" alt="Mapa de procesos Valve / Steam"><span class="zoom">⤢ AMPLIAR</span><figcaption><span>Mapa de procesos — Valve / Steam</span><span>Imagen</span></figcaption></figure>
+      <div>
+        <div class="grid" style="gap:10px;margin-bottom:16px">
+          <div class="card" style="padding:18px;border-left:3px solid var(--blue2)"><span class="pill p-blue">Estratégicos · 5</span><p style="margin-top:8px">Planeación estratégica · Innovación y desarrollo tecnológico · Gestión del ecosistema Steam · Gestión financiera · Calidad y cumplimiento</p></div>
+          <div class="card" style="padding:18px;border-left:3px solid var(--green)"><span class="pill p-green">Misionales · 7</span><p style="margin-top:8px">Desarrollo de videojuegos → Pruebas y calidad → Lanzamiento → Distribución vía Steam → Comercialización → Soporte → Retroalimentación y mejora continua</p></div>
+          <div class="card" style="padding:18px;border-left:3px solid var(--purple)"><span class="pill p-purple">Apoyo · 6</span><p style="margin-top:8px">Recursos humanos · Tecnología e infraestructura · Gestión legal · Administración y finanzas · Seguridad de la información · Comunicación corporativa</p></div>
+        </div>
+        <div class="card" style="padding:18px"><span class="label">Valor para el cliente</span><p style="margin-top:6px;color:var(--white);font-weight:600">Entretenimiento, innovación, confiabilidad y comunidad.</p></div>
+      </div>
+    </div>
+    <h3 class="reveal" style="font-size:28px;margin:54px 0 18px;text-transform:uppercase">Los 5 procesos clave</h3>
+    <div class="reveal" id="procList"></div>
+    <div class="grid g2 reveal" style="margin-top:26px">
+      <figure class="fig" data-doc="mapa5"><img src="docs/th/mapa-5-procesos.jpg" alt="Mapa de 5 procesos clave" style="height:340px;object-fit:cover;object-position:top"><span class="zoom">⤢ AMPLIAR</span><figcaption><span>Mapa de 5 procesos clave y roles técnicos</span><span>PNG</span></figcaption></figure>
+      <figure class="fig" data-doc="mindmap"><img src="docs/th/mapa-mental.jpg" alt="Mapa mental de procesos" style="height:340px;object-fit:cover;object-position:top"><span class="zoom">⤢ AMPLIAR</span><figcaption><span>Mapa mental (NotebookLM)</span><span>PNG</span></figcaption></figure>
+    </div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>Sin supervisores, Valve opera apoyada en cinco procesos interconectados y en un perfil de talento estrictamente seleccionado.</p></div></div>
+    <div class="next">Conexión siguiente: <a href="#valor">quién entrega y quién recibe valor →</a></div>
+  </div>
+</section>
+
+<!-- ============ 05 CADENA DE VALOR ============ -->
+<section class="sec" id="valor" data-n="05" data-t="Cadena de valor">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">05</div><div><span class="eyebrow">PEPSU · Interesados · RACI</span><h2>Cadena de valor</h2><p>Del proveedor al gamer: el taller de entradas y salidas, la matriz de interesados y la asignación de responsabilidades en los Cabals.</p></div></div>
+    <div class="pepsu reveal">
+      <div class="pep" style="--c:var(--blue)"><div class="letter">P</div><h4>Proveedor</h4><ul><li>Hardware</li><li>Servidores</li><li>Librerías gráficas</li></ul></div>
+      <div class="pep" style="--c:var(--cyan)"><div class="letter">E</div><h4>Entradas</h4><ul><li>Conceptos de videojuegos</li><li>Desarrolladores y diseñadores</li></ul></div>
+      <div class="pep" style="--c:var(--purple)"><div class="letter">P</div><h4>Proceso</h4><ul><li>Desarrollo de videojuegos</li><li>Innovación tecnológica</li></ul></div>
+      <div class="pep" style="--c:var(--pink)"><div class="letter">S</div><h4>Salida</h4><ul><li>Steam</li></ul></div>
+      <div class="pep" style="--c:var(--green)"><div class="letter">U</div><h4>Cliente</h4><ul><li>Gamers</li></ul></div>
+    </div>
+    <h3 class="reveal" style="font-size:28px;margin:54px 0 18px;text-transform:uppercase">Matriz de interesados</h3>
+    <div class="stake reveal">
+      <div>
+        <p style="color:#9eabb8;margin-bottom:14px">Proyecto: plataforma con inteligencia artificial para identificar videojuegos y comparar sus precios en diferentes tiendas o vendedores.</p>
+        <div class="chips">
+          <span class="chip">Gamers</span><span class="chip">Desarrolladores</span><span class="chip">Vendedores de videojuegos</span><span class="chip">Socios y directivos</span><span class="chip">Casas de eSports</span><span class="chip">Proveedores</span><span class="chip">Gabe Newell / dueño</span><span class="chip">Proveedor de nube</span><span class="chip">Pasarela de pago</span><span class="chip">Bancos</span><span class="chip">Fabricantes de hardware</span>
+        </div>
+        <div class="card" style="margin-top:18px;padding:18px"><span class="label">Lectura</span><p style="margin-top:6px">Dueño, socios y gamers concentran la mayor influencia e importancia: se gestionan de cerca. Nube y QA tienen influencia media-baja: se mantienen informados.</p></div>
+      </div>
+      <div class="sgrid" id="sgrid"><span class="ax-y">INFLUENCIA ↑</span><span class="ax-x">IMPORTANCIA →</span><div class="cells"></div></div>
+    </div>
+    <h3 class="reveal" style="font-size:28px;margin:54px 0 6px;text-transform:uppercase">Matriz RACI para Cabals</h3>
+    <p class="reveal" style="color:#9eabb8;margin-bottom:18px;max-width:780px">Pasa el cursor por una fila para ver cómo funciona cada fase en Valve. El playtester es el “juez supremo”: si un jugador se frustra, la idea se descarta.</p>
+    <div class="tbl-wrap reveal">
+      <table class="raci"><thead><tr><th>ID</th><th>Actividad / fase</th><th style="text-align:center">Cabal</th><th style="text-align:center">Facilitador</th><th style="text-align:center">Escritor</th><th style="text-align:center">Playtester</th><th style="text-align:center">Gabe Newell</th><th>Cómo funciona en Valve</th></tr></thead><tbody id="raciBody"></tbody></table>
+    </div>
+    <div class="legend"><span><i class="r-R"></i>R · Responsable de ejecución</span><span><i class="r-A"></i>A · Aprobador (consenso o playtester)</span><span><i class="r-C"></i>C · Consultado</span><span><i class="r-I"></i>I · Informado</span></div>
+    <div class="grid g3 reveal" style="margin-top:22px">
+      <div class="card"><h3>Freno a la autogestión</h3><p>El RACI rígido encasilla roles y destruye la propiedad colectiva. En Valve “todos son diseñadores”.</p></div>
+      <div class="card"><h3>Responsabilidad, no culpa</h3><p>El error es una oportunidad de aprendizaje; el sistema premia el consenso en lugar de buscar culpables.</p></div>
+      <div class="card"><h3>Voto con los pies</h3><p>Los buenos proyectos atraen personal; los malos no reciben recursos y mueren.</p></div>
+    </div>
+    <div class="docbar"><span class="label">Documentos:</span><button class="docbtn" data-doc="taller"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Taller PEPSU</button><button class="docbtn" data-doc="stake-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Matriz de interesados</button><button class="docbtn" data-doc="stake-m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Interesados manuscrito</button><button class="docbtn" data-doc="raci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Matriz RACI (Excel)</button></div>
+    <div class="next">Conexión siguiente: <a href="#pestel">el entorno que rodea a Valve →</a></div>
+  </div>
+</section>
+
+<!-- ============ 06 PESTEL ============ -->
+<div class="banner"><img src="img/space.jpg" alt=""></div>
+<section class="sec" id="pestel" data-n="06" data-t="PESTEL" style="border-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">06</div><div><span class="eyebrow">Contexto externo</span><h2>Análisis PESTEL</h2><p>Seis dimensiones del entorno que influyen en Valve y Steam.</p></div></div>
+    <div class="pestel reveal">
+      <div class="pe" style="--c:#60a5fa"><span class="L">P</span><h3>Político</h3><p>Sujeta a regulaciones sobre comercio digital, impuestos, protección de datos y restricciones para videojuegos en algunos países.</p></div>
+      <div class="pe" style="--c:#a4d007"><span class="L">E</span><h3>Económico</h3><p>Sus ingresos dependen de la venta de videojuegos y de Steam. La inflación, las tasas de cambio y el poder adquisitivo pueden afectarla.</p></div>
+      <div class="pe" style="--c:#f472b6"><span class="L">S</span><h3>Social</h3><p>El crecimiento de la comunidad gamer y los eSports la favorece, pero debe responder a expectativas sobre contenido, inclusión y seguridad en línea.</p></div>
+      <div class="pe" style="--c:#22e1ff"><span class="L">T</span><h3>Tecnológico</h3><p>Debe innovar en videojuegos, realidad virtual (SteamVR), ciberseguridad y mejoras de Steam para mantenerse competitiva.</p></div>
+      <div class="pe" style="--c:#4ade80"><span class="L">E</span><h3>Ecológico</h3><p>Su impacto es menor que el de las manufactureras, pero busca optimizar el consumo energético de sus centros de datos y promover la distribución digital.</p></div>
+      <div class="pe" style="--c:#fbbf24"><span class="L">L</span><h3>Legal</h3><p>Debe cumplir leyes de propiedad intelectual, derechos de autor, datos personales, defensa del consumidor y compras digitales y microtransacciones.</p></div>
+    </div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>La regulación digital y la protección de datos son las fuerzas externas que más se repiten en todo el sistema.</p></div></div>
+    <div class="docbar"><span class="label">Documentos:</span><button class="docbtn" data-doc="pestel-d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>PESTEL digital</button><button class="docbtn" data-doc="pestel-m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>PESTEL manuscrito</button></div>
+    <div class="next">Conexión siguiente: <a href="#ambiente">la huella ambiental →</a></div>
+  </div>
+</section>
+
+<!-- ============ 07 AMBIENTE ============ -->
+<section class="sec" id="ambiente" data-n="07" data-t="Ambiente">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">07</div><div><span class="eyebrow">ISO 14001</span><h2>Aspectos e impactos ambientales</h2><p>Infraestructura en la nube, hardware, logística y oficinas: identificación de aspectos y controles sugeridos. Filtra por medio afectado.</p></div></div>
+    <div class="filters reveal" id="envF"><button class="on" data-f="all">Todos</button><button data-f="Aire">Aire</button><button data-f="Suelo">Suelo</button><button data-f="Agua">Agua</button><button data-f="Recursos">Recursos</button></div>
+    <div class="tbl-wrap reveal"><table><thead><tr><th>Aspecto ambiental</th><th>Impactos asociados</th><th>Medio afectado</th><th>Control sugerido</th></tr></thead><tbody id="envBody"></tbody></table></div>
+    <div class="meters reveal" id="meters">
+      <div class="meter"><b>85%</b><div class="bar"><i data-w="85"></i></div><span>Energía renovable en la nube (meta 100%)</span></div>
+      <div class="meter"><b>100%</b><div class="bar"><i data-w="100"></i></div><span>Embalaje reciclable</span></div>
+      <div class="meter"><b>100%</b><div class="bar"><i data-w="100"></i></div><span>Detergentes biodegradables</span></div>
+      <div class="meter"><b>30%</b><div class="bar"><i data-w="30"></i></div><span>Reducción de descarte de cableado</span></div>
+      <div class="meter"><b>&gt;9/10</b><div class="bar"><i data-w="92"></i></div><span>Reparabilidad Steam Deck (iFixit)</span></div>
+    </div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>5 de 5 aspectos ambientales están conformes. El siguiente paso es llevar la energía renovable de la nube del 85% al 100%.</p></div></div>
+    <div class="docbar"><span class="label">Documento:</span><button class="docbtn" data-doc="ambiental"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Matriz de aspectos e impactos</button></div>
+    <div class="next">Conexión siguiente: <a href="#riesgos">gestión de riesgos →</a></div>
+  </div>
+</section>
+
+<!-- ============ 08 RIESGOS ============ -->
+<div class="banner"><img src="img/racing.jpg" alt=""></div>
+<section class="sec" id="riesgos" data-n="08" data-t="Riesgos" style="border-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">08</div><div><span class="eyebrow">ISO 31000 · 9001 · 27001 · GTC 45</span><h2>Gestión de riesgos</h2><p>Mapa de calor, matrices por sistema y plan de tratamiento. Los controles reducen el riesgo total en un 71%: de 130 puntos inherentes a 37 residuales.</p></div></div>
+    <div class="tabs reveal" id="rtabs">
+      <button class="on" data-p="p-heat">Mapa de calor</button><button data-p="p-cat">Categorías</button><button data-p="p-9001">Calidad · ISO 9001</button><button data-p="p-27001">Información · ISO 27001</button><button data-p="p-sst">SST · GTC 45</button><button data-p="p-treat">Tratamiento</button>
+    </div>
+    <div class="pane on" id="p-heat">
+      <div class="heat">
+        <div class="hm" id="hm"><span class="axy">PROBABILIDAD</span><span class="axx">IMPACTO</span><div class="cells"></div></div>
+        <div class="rdetail" id="rdetail"></div>
+      </div>
+      <h3 style="font-size:24px;margin:40px 0 16px;text-transform:uppercase">Inherente vs. residual</h3>
+      <div class="bars" id="bars"></div>
+      <div class="legend"><span><i style="background:rgba(255,77,94,.6)"></i>Riesgo inherente</span><span><i style="background:#66c0f4"></i>Riesgo residual (tras controles)</span><span style="color:var(--muted)">Escala 0–25</span></div>
+    </div>
+    <div class="pane" id="p-cat">
+      <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Categoría</th><th>Riesgo</th><th>Probabilidad</th><th>Impacto</th><th>Nivel</th></tr></thead><tbody>
+        <tr><td class="mono">001</td><td><strong>Operativo</strong></td><td>Fallo de servidor</td><td>Alta</td><td>Alto</td><td><span class="lvl l-ext">CRÍTICO</span></td></tr>
+        <tr><td class="mono">002</td><td><strong>Financiero</strong></td><td>Fluctuación de moneda</td><td>Media</td><td>Medio</td><td><span class="lvl l-medio">MODERADO</span></td></tr>
+        <tr><td class="mono">003</td><td><strong>Estratégico</strong></td><td>Competencia de mercado</td><td>Baja</td><td>Alto</td><td><span class="lvl l-alto">SIGNIFICATIVO</span></td></tr>
+        <tr><td class="mono">004</td><td><strong>Cumplimiento</strong></td><td>Regulaciones de datos</td><td>Media</td><td>Bajo</td><td><span class="lvl l-bajo">BAJO</span></td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="pane" id="p-9001"><div class="tbl-wrap"><table><thead><tr><th>Riesgo de calidad</th><th>Causa raíz</th><th>Dimensión ISO 9001</th><th>Inherente</th><th>Controles</th><th>Responsable</th><th>KPI</th><th>Residual</th></tr></thead><tbody id="q9001"></tbody></table></div></div>
+    <div class="pane" id="p-27001"><div class="tbl-wrap"><table><thead><tr><th>Activo / amenaza</th><th>Vulnerabilidad</th><th>Dimensión CIA</th><th>Inherente</th><th>Controles Anexo A</th><th>Responsable</th><th>KPI</th><th>Residual</th></tr></thead><tbody id="q27001"></tbody></table></div></div>
+    <div class="pane" id="p-sst">
+      <div class="tbl-wrap"><table><thead><tr><th>Proceso / actividad</th><th>Peligro</th><th>Controles existentes</th><th>ND·NE·NP·NC</th><th>NR</th><th>Nivel</th><th>Medidas de intervención</th></tr></thead><tbody>
+        <tr><td><strong>Desarrollo de videojuegos</strong><br>Programación y diseño prolongado</td><td><span class="pill p-orange">Biomecánico</span><br>Posturas prolongadas y movimientos repetitivos</td><td>Sillas ergonómicas, escritorios ajustables y pausas voluntarias</td><td class="mono">2 · 3 · 6 · 25</td><td class="mono"><strong>150</strong></td><td><span class="lvl l-alto">II · CORREGIR</span></td><td><strong>Ingeniería:</strong> escritorios ajustables y soportes para monitores.<br><strong>Administración:</strong> pausas activas cada 60 min y evaluación ergonómica.</td></tr>
+        <tr><td><strong>Laboratorio de hardware</strong><br>Ensamble y pruebas de Steam Deck y Valve Index</td><td><span class="pill p-yellow">Eléctrico</span><br>Contacto con equipos energizados y prototipos</td><td>Pulseras ESD, estaciones protegidas y procedimientos técnicos</td><td class="mono">6 · 2 · 12 · 60</td><td class="mono"><strong>720</strong></td><td><span class="lvl l-ext">I · NO ACEPTABLE</span></td><td><strong>Ingeniería:</strong> protección diferencial y corte automático.<br><strong>Administración:</strong> LOTO, capacitación eléctrica e inspecciones.</td></tr>
+        <tr><td><strong>Operación de Steam</strong><br>Monitoreo de infraestructura y soporte</td><td><span class="pill p-purple">Psicosocial</span><br>Estrés por incidentes y alta disponibilidad</td><td>Trabajo colaborativo y autonomía organizacional</td><td class="mono">6 · 2 · 12 · 25</td><td class="mono"><strong>300</strong></td><td><span class="lvl l-alto">II · CORREGIR</span></td><td><strong>Ingeniería:</strong> automatización de alertas.<br><strong>Administración:</strong> rotación de turnos y protocolos de incidentes.</td></tr>
+      </tbody></table></div>
+      <div class="legend"><span><i style="background:#ff4d5e"></i>Crítico 4000–600</span><span><i style="background:#f5a623"></i>Alto 500–150</span><span><i style="background:#facc15"></i>Medio 120–40</span><span><i style="background:#4ade80"></i>Bajo 20</span></div>
+    </div>
+    <div class="pane" id="p-treat">
+      <div class="grid g3" style="margin-bottom:16px">
+        <div class="card" style="text-align:center"><span class="label">Riesgo residual total</span><b style="display:block;font:700 40px var(--display);color:var(--orange)">7.2/10</b><span class="pill p-orange">Moderado</span></div>
+        <div class="card" style="text-align:center"><span class="label">Implementación de controles</span><b style="display:block;font:700 40px var(--display);color:var(--green)">89%</b><span class="pill p-green">Completo</span></div>
+        <div class="card" style="text-align:center"><span class="label">Próxima revisión ejecutiva</span><b style="display:block;font:700 40px var(--display);color:var(--blue)">26 OCT</b><span class="pill p-blue">2024</span></div>
+      </div>
+      <div class="treat">
+        <div class="card"><h4>Verificación legal y restricciones de API (loot boxes)</h4><div class="kv">Cumplimiento API<b>98,5%</b></div><div class="kv">Verificación edad/región<b>&lt;1 ms</b></div><div class="kv">Residual<b style="color:#fcd34d">MODERADO</b></div><div class="kv">Líder · Acción<b>CISO · Auditoría trimestral</b></div></div>
+        <div class="card"><h4>Segregación y purga de datos (logística)</h4><div class="kv">Efectividad de segregación<b>99,9%</b></div><div class="kv">Confirmación de auto-purga<b>100%</b></div><div class="kv">Residual<b style="color:#6ee7a0">BAJO</b></div><div class="kv">Líder · Acción<b>Legal · Revisión semestral</b></div></div>
+        <div class="card"><h4>Mercado de RAM y optimización VRAM en SteamOS</h4><div class="kv">Eficiencia VRAM<b>+25%</b></div><div class="kv">Tendencia Steam Deck<b>Creciendo</b></div><div class="kv">Residual<b style="color:#fcd34d">MODERADO</b></div><div class="kv">Líder · Acción<b>Hardware · Continua</b></div></div>
+        <div class="card"><h4>Migración a energía renovable (nube)</h4><div class="kv">Mix renovable<b>85%</b></div><div class="kv">Meta de huella de carbono<b>En curso</b></div><div class="kv">Residual<b style="color:#6ee7a0">BAJO</b></div><div class="kv">Líder · Acción<b>Legal · Auditoría anual</b></div></div>
+        <div class="card"><h4>Playtesting y política de reembolsos</h4><div class="kv">Satisfacción del jugador<b>4,7/5</b></div><div class="kv">Tasa de reembolsos<b>Estable &lt;1%</b></div><div class="kv">Residual<b style="color:#fcd34d">MODERADO</b></div><div class="kv">Líder · Acción<b>CISO · Revisión trimestral</b></div></div>
+      </div>
+    </div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>Las loot boxes y la explotación del mercado de skins comparten el factor regulatorio: son los riesgos que más vigilancia necesitan.</p></div></div>
+    <div class="docbar"><span class="label">Documentos:</span>
+      <button class="docbtn" data-doc="heatmap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Risk heatmap</button>
+      <button class="docbtn" data-doc="categorias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Tabla de categorías</button>
+      <button class="docbtn" data-doc="iso9001"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Matriz calidad</button>
+      <button class="docbtn" data-doc="iso27001"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Matriz seguridad info.</button>
+      <button class="docbtn" data-doc="gtc45"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Matriz GTC 45</button>
+      <button class="docbtn" data-doc="treatment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Plan de tratamiento</button>
+    </div>
+    <div class="next">Conexión siguiente: <a href="#controles">los controles operacionales →</a></div>
+  </div>
+</section>
+
+<!-- ============ 09 CONTROLES ============ -->
+<section class="sec" id="controles" data-n="09" data-t="Controles">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">09</div><div><span class="eyebrow">Control operacional</span><h2>Matriz de controles operacionales</h2><p>5 procesos · 4 aspectos de gestión · 3 controles por proceso. Cada proceso tiene un objetivo, sus controles y un indicador para medirlo.</p></div></div>
+    <div class="filters reveal" id="ctlF"><button class="on" data-f="all">Todos</button><button data-f="Ambiental">Ambiental</button><button data-f="SST">SST</button><button data-f="SGCI">SGCI</button><button data-f="Calidad">Calidad</button></div>
+    <div class="ctls reveal" id="ctls"><div class="ctl" style="--c:#4ade80"><div class="ctl-img" style="background-image:url(img/fantasy.jpg)"><span class="ctl-n">1</span><h4>Gestión de residuos electrónicos</h4></div><div class="ctl-asp"><div class="ctl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/></svg></div><b>Ambiental</b></div><div class="ctl-obj"><span class="label">Objetivo</span><p>Reducir el impacto ambiental de los dispositivos y componentes electrónicos desechados.</p></div><div class="ctl-list"><span class="label">Controles operacionales</span><ul><li><span class="cn">1</span>Separar residuos electrónicos de residuos ordinarios.</li><li><span class="cn">2</span>Entregar componentes dañados a gestores autorizados.</li><li><span class="cn">3</span>Registrar cantidades de residuos generados y entregados.</li></ul></div><div class="ctl-kpi"><span class="label">Indicador (KPI)</span><p>% de residuos electrónicos entregados para aprovechamiento o tratamiento adecuado.</p></div></div><div class="ctl" style="--c:#60a5fa"><div class="ctl-img" style="background-image:url(img/corridor.jpg)"><span class="ctl-n">2</span><h4>Desarrollo de videojuegos</h4></div><div class="ctl-asp"><div class="ctl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/><path d="M3.2 12h4.3l1.5-3 3 6 1.5-3h7.3"/></svg></div><b>SST</b></div><div class="ctl-obj"><span class="label">Objetivo</span><p>Prevenir lesiones musculoesqueléticas y fatiga asociadas al trabajo frente a pantallas.</p></div><div class="ctl-list"><span class="label">Controles operacionales</span><ul><li><span class="cn">1</span>Evaluación ergonómica de puestos de trabajo.</li><li><span class="cn">2</span>Pausas activas y alternancia de tareas.</li><li><span class="cn">3</span>Inspecciones periódicas de iluminación, postura y mobiliario.</li></ul></div><div class="ctl-kpi"><span class="label">Indicador (KPI)</span><p>% de puestos evaluados que cumplen los criterios ergonómicos.</p></div></div><div class="ctl" style="--c:#a78bfa"><div class="ctl-img" style="background-image:url(img/city.jpg)"><span class="ctl-n">3</span><h4>Administración de Steam y sus sistemas</h4></div><div class="ctl-asp"><div class="ctl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 7v6c0 4.5 3.4 7.6 8 8 4.6-.4 8-3.5 8-8V7l-8-4Z"/></svg></div><b>SGCI</b></div><div class="ctl-obj"><span class="label">Objetivo</span><p>Proteger la integridad, disponibilidad y trazabilidad de los sistemas y la información.</p></div><div class="ctl-list"><span class="label">Controles operacionales</span><ul><li><span class="cn">1</span>Gestión de permisos de acceso por roles.</li><li><span class="cn">2</span>Revisión de registros de auditoría y cambios críticos.</li><li><span class="cn">3</span>Copias de seguridad y pruebas documentadas de recuperación.</li></ul></div><div class="ctl-kpi"><span class="label">Indicador (KPI)</span><p>% de revisiones de acceso y pruebas de recuperación realizadas según el plan.</p></div></div><div class="ctl" style="--c:#f59e0b"><div class="ctl-img" style="background-image:url(img/racing.jpg)"><span class="ctl-n">4</span><h4>Fabricación y distribución de Steam Deck</h4></div><div class="ctl-asp"><div class="ctl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div><b>Calidad</b></div><div class="ctl-obj"><span class="label">Objetivo</span><p>Garantizar que los dispositivos cumplan las especificaciones técnicas y funcionales.</p></div><div class="ctl-list"><span class="label">Controles operacionales</span><ul><li><span class="cn">1</span>Inspección de componentes y proveedores.</li><li><span class="cn">2</span>Pruebas funcionales de pantalla, controles, batería y conectividad.</li><li><span class="cn">3</span>Inspección final y registro de defectos antes del despacho.</li></ul></div><div class="ctl-kpi"><span class="label">Indicador (KPI)</span><p>% de dispositivos que superan las pruebas de calidad en la primera inspección.</p></div></div><div class="ctl" style="--c:#22d3ee"><div class="ctl-img" style="background-image:url(img/space.jpg)"><span class="ctl-n">5</span><h4>Atención al cliente y reembolsos</h4></div><div class="ctl-asp"><div class="ctl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg></div><b>Calidad</b></div><div class="ctl-obj"><span class="label">Objetivo</span><p>Garantizar respuestas consistentes, oportunas y ajustadas a las políticas de servicio.</p></div><div class="ctl-list"><span class="label">Controles operacionales</span><ul><li><span class="cn">1</span>Validación de requisitos y clasificación de solicitudes.</li><li><span class="cn">2</span>Seguimiento de tiempos de respuesta y cumplimiento de plazos.</li><li><span class="cn">3</span>Análisis de reclamaciones recurrentes y corrección de causas raíz.</li></ul></div><div class="ctl-kpi"><span class="label">Indicador (KPI)</span><p>% de solicitudes resueltas dentro del plazo establecido.</p></div></div></div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>Better games. A brighter future: cada proceso clave se controla con tres acciones concretas y un indicador medible.</p></div></div>
+    <div class="docbar"><span class="label">Documento:</span><button class="docbtn" data-doc="controles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Matriz de controles operacionales</button></div>
+    <div class="next">Conexión siguiente: <a href="#infraestructura">la red que mueve los juegos →</a></div>
+  </div>
+</section>
+
+<!-- ============ 10 INFRAESTRUCTURA ============ -->
+<section class="sec" id="infraestructura" data-n="10" data-t="Red global">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">10</div><div><span class="eyebrow">Clusters Steam · 2023</span><h2>Red global de distribución</h2><p>Nodos de caché y <em>connection managers</em> documentados (Visser &amp; Fontugne, IIJ Research Lab, 2024 · PeeringDB AS32590). Pasa el cursor por los nodos.</p></div></div>
+    <div class="grid g4 reveal" style="margin-bottom:18px">
+      <div class="card"><span class="label">Tráfico medio global</span><b style="display:block;font:700 38px var(--display);color:var(--white)">15 Tbps</b><small style="color:var(--muted)">Feb–oct 2023</small></div>
+      <div class="card"><span class="label">Pico lanzamiento CS2</span><b style="display:block;font:700 38px var(--display);color:var(--orange)">85 Tbps</b><small style="color:var(--muted)">28 sep 2023</small></div>
+      <div class="card"><span class="label">Pico máximo</span><b style="display:block;font:700 38px var(--display);color:var(--pink)">146 Tbps</b><small style="color:var(--muted)">Feb–oct 2023</small></div>
+      <div class="card"><span class="label">Servidores de caché</span><b style="display:block;font:700 38px var(--display);color:var(--green)">152 → 193</b><small style="color:var(--muted)">20 ciudades con caché · 27 DC</small></div>
+    </div>
+    <div class="net reveal">
+      <div class="mapbox" id="mapbox"><svg id="netmap" viewBox="0 0 1000 470"></svg><div class="tip" id="tip"></div></div>
+      <div class="card">
+        <span class="label">% del tráfico servido por caché propia</span>
+        <div class="reg" id="regbars" style="margin-top:16px"></div>
+        <p style="margin-top:18px;font-size:13px">Cuando la caché de una ciudad se satura o está aislada (Johannesburgo, São Paulo, Sídney), Valve recurre a CDN de terceros:</p>
+        <div class="chips" style="margin-top:10px"><span class="chip">Akamai</span><span class="chip">Google Cloud CDN</span><span class="chip">Level3 / Lumen</span><span class="chip">Alibaba Cloud CDN</span><span class="chip">Highwinds</span></div>
+      </div>
+    </div>
+    <div class="legend"><span><i style="background:#66c0f4;border-radius:50%"></i>Caché + Connection Manager</span><span><i style="background:#f5a623;border-radius:50%"></i>Solo Connection Manager</span><span><i style="background:#7a8699;border-radius:50%"></i>Solo PeeringDB</span></div>
+    <div class="quote reveal"><div class="q">“</div><div><span class="label">Mensaje central</span><p>Sudamérica es la región con menor cobertura propia: solo el 59% de su tráfico lo sirve la caché de Valve.</p></div></div>
+    <div class="docbar"><span class="label">Documento:</span><a class="docbtn" href="docs/clusters-steam.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Abrir Clusters Steam (HTML original)</a></div>
+    <div class="next">Conexión siguiente: <a href="#auditoria">la auditoría integral →</a></div>
+  </div>
+</section>
+
+<!-- ============ 10 AUDITORÍA ============ -->
+<div class="banner"><img src="img/fantasy.jpg" alt=""></div>
+<section class="sec" id="auditoria" data-n="11" data-t="Auditoría" style="border-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">11</div><div><span class="eyebrow">Control y medición</span><h2>Auditoría integral</h2><p>Dashboard ejecutivo del Sistema de Gestión Integrado: SST · Calidad · Seguridad de la información · Ambiental.</p></div></div>
+    <div class="grid g3 reveal">
+      <div class="card"><span class="label">Evidencias verificadas</span><b style="display:block;font:700 44px var(--display);color:var(--green)">8/8</b><p>100% de requisitos con evidencia</p></div>
+      <div class="card"><span class="label">Cumplimiento ambiental</span><b style="display:block;font:700 44px var(--display);color:var(--green)">5/5</b><p>Aspectos ISO 14001 conformes</p></div>
+      <div class="card"><span class="label">Reducción de riesgo</span><b style="display:block;font:700 44px var(--display);color:var(--blue)">71%</b><p>Inherente 130 → residual 37 (10 riesgos)</p></div>
+      <div class="card"><span class="label">Riesgos residuales máx.</span><b style="display:block;font:700 44px var(--display);color:var(--orange)">3</b><p>Con residual = 6 (el más alto)</p></div>
+      <div class="card"><span class="label">Peligro SST crítico</span><b style="display:block;font:700 44px var(--display);color:var(--red)">1</b><p>NR 720 · Alto (no aceptable)</p></div>
+      <div class="card"><span class="label">Avance del plan</span><b style="display:block;font:700 44px var(--display);color:var(--white)">2/5</b><p>Fases completadas o listas</p></div>
+    </div>
+    <h3 class="reveal" style="font-size:28px;margin:48px 0 18px;text-transform:uppercase">Fases del proceso</h3>
+    <div class="phases reveal">
+      <div class="phase"><span class="bigN">1</span><span class="pill p-green">Completado</span><h4>Preparación interna</h4><p>Dossier digital · 2 semanas</p></div>
+      <div class="phase"><span class="bigN">2</span><span class="pill p-blue">Listo</span><h4>Reunión de apertura</h4><p>Presentación ejecutiva · 2 horas</p></div>
+      <div class="phase"><span class="bigN">3</span><span class="pill p-orange">En proceso</span><h4>Ejecución y muestreo</h4><p>Evidencia en vivo y logs · 3 días</p></div>
+      <div class="phase"><span class="bigN">4</span><span class="pill p-purple">Pendiente</span><h4>Evaluación de hallazgos</h4><p>Minuta previa · 1 h diaria</p></div>
+      <div class="phase"><span class="bigN">5</span><span class="pill p-purple">Pendiente</span><h4>Reunión de cierre</h4><p>Acta y compromisos CAPA · 2 horas</p></div>
+    </div>
+    <h3 class="reveal" style="font-size:28px;margin:48px 0 18px;text-transform:uppercase">Hallazgos</h3>
+    <div class="find reveal">
+      <div class="card" style="--c:var(--red)"><span class="pill p-red">Crítico</span><h3 style="margin-top:10px">Riesgo eléctrico en laboratorio (NR 720)</h3><p>Único peligro SST “Alto (no aceptable)”. Preparar registros LOTO, protección diferencial y capacitaciones.</p></div>
+      <div class="card" style="--c:var(--orange)"><span class="pill p-orange">Atención</span><h3 style="margin-top:10px">Inconsistencia antes de la fase 3</h3><p>EVID-SST-01 figura como verificado mientras la matriz SST mantiene el control eléctrico en “verificar en campo”.</p></div>
+      <div class="card" style="--c:var(--orange)"><span class="pill p-orange">Atención</span><h3 style="margin-top:10px">Tres riesgos con residual 6</h3><p>Loot boxes, explotación de APIs / skins y retraso de hardware. Tener a mano el plan de tratamiento y el heatmap.</p></div>
+      <div class="card" style="--c:var(--green)"><span class="pill p-green">Fortaleza</span><h3 style="margin-top:10px">Trazabilidad completa</h3><p>8 de 8 requisitos verificados: LOTO, ergonomía, playtesting, soporte, purga PII, Steam Guard / RBAC, energía renovable y reparabilidad.</p></div>
+    </div>
+    <h3 class="reveal" style="font-size:28px;margin:48px 0 18px;text-transform:uppercase">Estado de evidencias</h3>
+    <div class="tbl-wrap reveal"><table><thead><tr><th>ID</th><th>Norma</th><th>Evidencia requerida</th><th>Responsable</th><th>Estado</th></tr></thead><tbody id="evid"></tbody></table></div>
+    <div class="docbar"><span class="label">Documento:</span><a class="docbtn" href="docs/dashboard-auditoria.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Abrir dashboard de auditoría (HTML original)</a></div>
+    <div class="next">Conexión siguiente: <a href="#documentos">todos los documentos del proyecto →</a></div>
+  </div>
+</section>
+
+<!-- ============ CENTRO DOCUMENTAL ============ -->
+<section class="sec" id="documentos" data-n="DOC" data-t="Centro documental">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">◆</div><div><span class="eyebrow">Biblioteca del proyecto</span><h2>Centro documental</h2><p>Los 24 documentos originales de la carpeta del proyecto. Haz clic para verlos en grande.</p></div></div>
+    <div class="filters reveal" id="docF"><button class="on" data-f="all">Todos</button><button data-f="PDF">PDF</button><button data-f="Imagen">Imágenes</button><button data-f="Word">Word</button><button data-f="Excel">Excel</button><button data-f="HTML">HTML</button></div>
+    <div class="dc-grid reveal" id="docGrid"></div>
+  </div>
+</section>
+
+<!-- ============ EQUIPO ============ -->
+<section class="sec" id="equipo" data-n="EQ" data-t="Equipo">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="num">◆</div><div><span class="eyebrow">Grupo 03</span><h2>Nuestro equipo</h2><p>Integrantes del proyecto Valve / Steam.</p></div></div>
+    <div class="team reveal">
+      <div class="mem" style="--c:#66c0f4"><div class="av">AP</div><h4>Andrés Felipe Piñeros Lozano</h4><span>Integrante 1</span></div>
+      <div class="mem" style="--c:#a78bfa"><div class="av">AL</div><h4>Andrea Patricia López Guerrero</h4><span>Integrante 2</span></div>
+      <div class="mem" style="--c:#ff4fd8"><div class="av">SG</div><h4>Sharon Carolina Gómez Soto</h4><span>Integrante 3</span></div>
+      <div class="mem" style="--c:#a4d007"><div class="av">JI</div><h4>Juan Sebastián Inocencio Delgado</h4><span>Integrante 4</span></div>
+      <div class="mem" style="--c:#f5a623"><div class="av">KR</div><h4>Karen Daniela Ruiz Madrigal</h4><span>Integrante 5</span></div>
+      <div class="mem" style="--c:#22e1ff"><div class="av">SB</div><h4>Samuel David Bolívar Trujillo</h4><span>Integrante 6</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><strong style="color:var(--white);font-family:var(--display);font-size:18px;letter-spacing:.12em">STEAM · VALVE SIG</strong><br>Proyecto académico — Grupo 03 · 2026. Sitio de análisis educativo; Steam y Valve son marcas de Valve Corporation.</div>
+    <div>Ilustraciones de videojuego originales creadas para este sitio.<br>Fuentes: documentos del proyecto, Manual para nuevos empleados de Valve, IIJ Research Lab (2024).</div>
+  </div>
+</footer>
+
+<!-- lightbox -->
+<div class="lb" id="lb">
+  <div class="lb-top"><div style="flex:1"><h4 id="lbT"></h4><small id="lbF"></small></div><div class="lb-nav"><button id="lbPrev">‹</button><span id="lbP" class="mono" style="font-size:12px;color:var(--muted)"></span><button id="lbNext">›</button></div><a id="lbOrig" class="btn btn-ghost btn-sm" style="display:none" target="_blank">Abrir original</a><button class="lb-close" id="lbClose">×</button></div>
+  <div class="lb-body" id="lbBody"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const LOCAL=!/claude|anthropic/i.test(location.hostname);
+
+/* ---------- DATA ---------- */
+const DOCS=[
+ {id:'alcance-m',t:'Alcance del proyecto (manuscrito)',f:'Alcance - Steam.pdf',ty:'PDF',p:['alcance-manuscrito-1.jpg']},
+ {id:'alcance-d',t:'Alcance del proyecto (digital)',f:'alcance.pdf',ty:'PDF',p:['alcance-digital-1.jpg']},
+ {id:'historia',t:'Historia, arquitectura y procesos de Valve',f:'historia_y_procesos_valve_v2.docx',ty:'Word',p:['historia-valve-1.jpg','historia-valve-2.jpg','historia-valve-3.jpg','historia-valve-4.jpg','historia-valve-5.jpg']},
+ {id:'valve',t:'Presentación Matriz Valve (paradigma, ítems y RACI)',f:'valve (1).pdf',ty:'PDF',p:['valve-presentacion-1.jpg','valve-presentacion-2.jpg','valve-presentacion-3.jpg','valve-presentacion-4.jpg']},
+ {id:'roles',t:'Matriz de roles y mapa de procesos',f:'roles_y_procesos_valve.xlsx',ty:'Excel',sec:'#organizacion'},
+ {id:'mapa-steam',t:'Mapa de procesos Valve / Steam',f:'WhatsApp Image 2026-08-23 at 12.33.59 PM.jpeg',ty:'Imagen',p:['mapa-procesos-steam.jpg']},
+ {id:'mapa5',t:'Mapa de 5 procesos clave y roles técnicos',f:'mapa-procesos-valve-v2.png',ty:'Imagen',p:['mapa-5-procesos.jpg']},
+ {id:'mindmap',t:'Mapa mental de procesos (NotebookLM)',f:'NotebookLM Mind Map.png',ty:'Imagen',p:['mapa-mental.jpg']},
+ {id:'taller',t:'Taller de entradas y salidas (PEPSU)',f:'TALLER DE ENTRADAS Y SALIDAS- (VALVE-STEAM)-GRUPO3.pdf',ty:'PDF',p:['taller-pepsu-1.jpg']},
+ {id:'stake-d',t:'Matriz de interesados (digital)',f:'matriz (1).pdf',ty:'PDF',p:['stakeholders-digital-1.jpg']},
+ {id:'stake-m',t:'Matriz de stakeholders (manuscrito)',f:'matriz.pdf',ty:'PDF',p:['stakeholders-manuscrito-1.jpg']},
+ {id:'raci',t:'Matriz RACI para Cabals',f:'valve-raci-SEND (1).xlsx',ty:'Excel',sec:'#valor'},
+ {id:'pestel-d',t:'Análisis PESTEL de Valve y Steam',f:'Pestel (1).pdf',ty:'PDF',p:['pestel-digital-1.jpg']},
+ {id:'pestel-m',t:'Análisis PESTEL (manuscrito)',f:'Pestel.pdf',ty:'PDF',p:['pestel-manuscrito-1.jpg']},
+ {id:'ambiental',t:'Aspectos e impactos ambientales',f:'aspectos e impactos ambientales.jpeg',ty:'Imagen',p:['aspectos-ambientales.jpg']},
+ {id:'heatmap',t:'Risk Heatmap Q3 2024',f:'risk heatmap.jpeg',ty:'Imagen',p:['risk-heatmap.jpg']},
+ {id:'categorias',t:'Tabla de categorías de riesgo',f:'tabla de categorias.jpeg',ty:'Imagen',p:['tabla-categorias.jpg']},
+ {id:'iso9001',t:'Matriz de riesgos de calidad (ISO 9001)',f:'matriz de riesgos y calidad.jpeg',ty:'Imagen',p:['riesgos-iso9001.jpg']},
+ {id:'iso27001',t:'Matriz de riesgos y seguridad de la información (ISO 27001)',f:'matriz  riesgos y seguridad información.jpeg',ty:'Imagen',p:['riesgos-iso27001.jpg']},
+ {id:'gtc45',t:'Matriz de riesgos GTC 45',f:'Matriz de riesgos.jpeg',ty:'Imagen',p:['matriz-gtc45.jpg']},
+ {id:'controles',t:'Matriz de controles operacionales',f:'matriz controles operacionales.png',ty:'Imagen',p:['controles-operacionales.jpg']},
+ {id:'treatment',t:'Plan de tratamiento y controles de riesgo',f:'risk treatment.jpeg',ty:'Imagen',p:['risk-treatment.jpg']},
+ {id:'clusters',t:'Clusters Steam — red global',f:'Clusters_Steam DEF.html',ty:'HTML',href:'docs/clusters-steam.html'},
+ {id:'dashboard',t:'Dashboard de auditoría integral',f:'dashboard_auditoria_valve.html',ty:'HTML',href:'docs/dashboard-auditoria.html'}
+];
+const PROCS=[
+ {c:'#38bdf8',t:'Selección y autogestión de proyectos (“Votar con los pies”)',ty:'Estratégico / Gobernanza',d:'Cada empleado elige libremente sus proyectos en una estructura plana, desplazando su escritorio con ruedas hacia donde aporte más valor.',i:'Ideas individuales, necesidades de la comunidad y tendencias tecnológicas.',o:'Propuestas validadas con reclutamiento interno autogestionado.',r:'Estrategas de producto, profesionales en forma de T.'},
+ {c:'#4ade80',t:'Desarrollo multidisciplinario en Camarillas (Cabals)',ty:'Operativo / Cadena de valor',d:'Equipos temporales que colaboran sin burocracia para concebir, iterar y lanzar videojuegos o hardware.',i:'Conceptos validados, prototipos e investigación de usuarios.',o:'Productos probados (playtested) y listos para lanzamiento.',r:'Ingenieros de software, artistas 3D, guionistas, ingenieros de hardware.'},
+ {c:'#facc15',t:'Distribución digital y operación de Steam',ty:'Operativo / Plataforma',d:'Operación de la tienda, la red CDN global, Steam Cloud, el sistema antitrampas VAC y Steamworks.',i:'Catálogo propio y de terceros, actualizaciones y metadatos.',o:'Descargas globales, partidas en la nube y comisiones del 20–30%.',r:'Ingenieros de infraestructura, especialistas legales y de seguridad.'},
+ {c:'#fb7185',t:'Gestión de economía virtual y mercado comunitario',ty:'Operativo / Financiero',d:'Monitoreo técnico y regulatorio de bienes cosméticos (skins de CS2 y Dota 2), previniendo fraudes.',i:'Bienes cosméticos de Valve o de la comunidad vía Steam Workshop.',o:'Intercambios seguros y flujos continuos de ingresos.',r:'Economistas, analistas de datos, curadores, artistas 3D.'},
+ {c:'#a78bfa',t:'Reclutamiento “en forma de T” y evaluación entre pares',ty:'Soporte / Talento',d:'Entrevistas grupales hechas por todo el personal y evaluación anónima anual (Peer Review y Stack Ranking) para definir salarios.',i:'Candidatos de alto nivel y retroalimentación anónima cruzada.',o:'Contratación superior a la media interna y remuneración equitativa.',r:'Entrevistadores internos, evaluadores de pares, soporte/RR. HH.'}
+];
+const RACI=[
+ ['1.1','Formación del Cabal','RA','C','I','I','I','Los Cabals se forman de manera orgánica: los empleados se autoconvocan moviendo sus escritorios con ruedas.'],
+ ['1.2','Conceptualización / lluvia de ideas','RA','R','R','I','C','Sesiones de hasta 6 horas para definir el core del juego. La opinión de Gabe Newell se debate como cualquier otra.'],
+ ['1.3','Documento de diseño (Spec Doc)','C','I','RA','I','I','El escritor lidera el documento (más de 200 páginas en Half-Life) para dar consistencia narrativa.'],
+ ['1.4','Desarrollo de código y niveles','RA','C','C','I','I','Cada miembro ejecuta de forma autónoma; los Team Leads solo centralizan información.'],
+ ['2.1','Playtesting (pruebas de juego)','R','I','I','A','I','El Cabal observa en silencio a probadores externos; su experiencia es el aprobador definitivo.'],
+ ['2.2','Priorización de cambios','RA','C','C','C','CI','Se decide qué pulir, descartar o simplificar por consenso de pares.'],
+ ['2.3','Lanzamiento y distribución (Shipping)','RA','I','I','I','I','El Cabal publica directamente en Steam sin firmas jerárquicas.']
+];
+const STAKE=[ // [row from top 0..4, col 0..4, label, tier]
+ [0,2,'Bancos / pasarela',1],[0,3,'Socios',2],[0,4,'Dueño',2],[1,3,'Dev',2],[1,4,'Gamers',2],[2,1,'Comercializadores',0],[2,3,'Proveedores',1],[2,4,'Fabricantes',1],[3,2,'Nube',0],[3,3,'QA',0]
+];
+const ENV=[
+ ['Consumo de energía por almacenamiento y distribución de datos','Operación global de Steam, descargas y nube','Emisión de gases de efecto invernadero (huella indirecta) y agotamiento de recursos no renovables.','Aire / Atmósfera','Aire','#ff6b6b','Migrar servidores a centros de datos con energía 100% renovable · Optimizar compresión de Steam para reducir ancho de banda.'],
+ ['Ciclo de vida y ensamblaje de hardware','Steam Deck, Valve Index y Steam Frame','Residuos electrónicos (e-waste), contaminación del suelo por metales pesados y agotamiento de recursos.','Suelo / Recursos naturales','Suelo Recursos','#fbbf24','Diseño reparable y modular · Programas de retoma, reacondicionamiento y reciclaje.'],
+ ['Logística y distribución global de hardware','Embalaje y envío internacional','Emisiones de CO₂ y material particulado; residuos de plásticos de un solo uso.','Aire / Suelo','Aire Suelo','#ff6b6b','Ecodiseño de cajas 100% libres de plástico · Descentralizar centros de distribución.'],
+ ['Operación física de oficinas y reubicaciones','Bellevue, escritorios con ruedas y mudanzas','Residuos de aparatos eléctricos (cables) y consumo ineficiente de energía.','Suelo / Recursos energéticos','Suelo Recursos','#fbbf24','Cableado modular de fácil desconexión · Teletrabajo en días de contingencia climática.'],
+ ['Servicios de confort y alimentación interna','Cafetería, fruta, lavandería y masajes','Residuos orgánicos, desperdicio de agua potable y vertimiento de aguas con detergentes.','Suelo / Agua','Suelo Agua','#60a5fa','Compostaje en sitio · Griferías ahorradoras · Detergentes biodegradables.']
+];
+const LV=v=>v>=20?['l-ext','EXTREMO']:v>=12?['l-alto','ALTO']:v>=6?['l-medio','MEDIO']:['l-bajo','BAJO'];
+const Q9001=[
+ ['Lanzamiento de juego defectuoso','Presión comercial o fallas tempranas','Diseño y desarrollo (8.3)',12,'Playtesting intensivo temprano y facultad de retrasar el lanzamiento','Felipe / Andrea','Satisfacción de jugadores > 90%',3],
+ ['Retraso o inviabilidad de hardware','Crisis global y alza de costos de RAM','Producción y lanzamiento',12,'Postergar lanzamiento hasta estabilizar costos','Sebastián / Felipe','Margen rendimiento / costo',6],
+ ['Incompatibilidad de juegos en Steam Deck','Fragmentación extrema de configuraciones','Satisfacción del cliente',8,'Steamworks, compatibilidad Proton / Deck Verified','Andrea / Felipe','Reembolsos procesados < 24 h',2],
+ ['Riesgo regulatorio por loot boxes','Especulación en el mercado secundario','Enfoque al cliente / ética',20,'Verificación estricta de edad/ID y transparencia','Sebastián / Andrea','0 multas y 100% cumplimiento',6],
+ ['Saturación en soporte y atención','Picos masivos de solicitudes en rebajas','Soporte postventa (8.2)',6,'Autogestión de reembolsos automatizada en Steam','Samuel / Andrea','Tiempo promedio de respuesta',2]
+];
+const Q27001=[
+ ['Exposición de datos PII en logística (caso CEVA)','Brecha en proveedor logístico externo de despacho de Steam Deck / Index','Privacidad · Confidencialidad',12,'A.15.1 Auditorías a terceros · A.8.10 Purga de PII a 30 días · A.5.24 Notificación de incidentes','Samuel / Karen','0 datos financieros expuestos',3],
+ ['Compromiso de cuentas y pagos en Steam','Credential stuffing, fuerza bruta y páginas clonadas de inicio de sesión','Confidencialidad e integridad',20,'A.8.5 MFA (Steam Guard) · A.8.24 AES-256 / TLS 1.3 · A.8.16 Monitoreo de inicios anómalos','Samuel / Andrea','Brechas en Steam Guard < 0,001%',4],
+ ['Filtración de código fuente e IP propia','Acceso no autorizado a repositorios Git de Half-Life, CS2, Dota 2 y SteamOS','Confidencialidad e integridad',12,'A.5.15 Mínimo privilegio (RBAC) · A.8.28 Firma de código · A.8.12 DLP','Felipe / Samuel','0 leaks; 100% commits firmados',3],
+ ['Ataques DDoS en la red global Steam Cloud','DDoS masivos y fallas de enrutamiento BGP en rebajas y lanzamientos','Disponibilidad',8,'A.8.14 Redundancia multirregión · A.8.20 Mitigación DDoS L3/L4/L7 · A.5.30 BCP/DRP con RTO < 15 min','Samuel / Sebastián','Uptime ≥ 99,95% · RTO < 15 min',2],
+ ['Explotación de APIs y mercado de skins','Abuso de endpoints de Steamworks por bots para manipular el mercado','Integridad y cumplimiento',20,'A.8.21 Rate limiting y OAuth 2.0 · A.5.31 Verificación de edad/ID · A.8.16 Baneo automatizado de bots','Sebastián / Andrea','Bloqueo de bots > 99,5%',6]
+];
+const RISKS=[
+ {id:'R1',n:'Loot boxes',p:5,i:4,d:'Riesgo regulatorio por cajas de botín: posibles sanciones y restricciones en varias jurisdicciones por temáticas de juegos de azar.',ctl:'Verificación legal y restricciones de API · auditoría regulatoria trimestral (CISO).'},
+ {id:'R2',n:'Brecha CEVA',p:4,i:3,d:'Exposición de datos personales en el proveedor logístico que despacha Steam Deck y Valve Index.',ctl:'Segregación de datos y purga automática de PII a los 30 días (Legal).'},
+ {id:'R3',n:'Crisis de RAM',p:3,i:4,d:'Alza de costos y escasez global de memoria que puede retrasar o encarecer el hardware.',ctl:'Aceptación del mercado y optimización de VRAM en SteamOS (+25%).'},
+ {id:'R4',n:'Volatilidad de mercado',p:3,i:3,d:'Fluctuación de moneda y demanda que afecta ingresos y precios regionales.',ctl:'Seguimiento financiero y precios regionales.'},
+ {id:'R5',n:'Retraso de desarrollo',p:2,i:3,d:'Los Cabals pueden extender plazos al priorizar calidad sobre fechas.',ctl:'Playtesting temprano y priorización por consenso.'},
+ {id:'R6',n:'Caída de plataforma',p:3,i:2,d:'Interrupciones de Steam por DDoS o fallas de enrutamiento en picos de demanda.',ctl:'Redundancia multirregión y BCP/DRP con RTO < 15 min.'},
+ {id:'R7',n:'Cumplimiento de datos',p:2,i:2,d:'Cambios en regulaciones de protección de datos personales.',ctl:'Gestión ISO 27001 y monitoreo normativo.'},
+ {id:'R8',n:'Bugs menores',p:1,i:1,d:'Errores menores en parches y actualizaciones.',ctl:'Control de errores en parches y soporte automatizado (ISO 9001).'}
+];
+const BARS=[['Loot boxes — riesgo regulatorio','ISO 9001',20,6],['Explotación de APIs y mercado de skins','ISO 27001',20,6],['Compromiso de cuentas y pagos','ISO 27001',20,4],['Retraso / inviabilidad de hardware','ISO 9001',12,6],['Lanzamiento de juego defectuoso','ISO 9001',12,3],['Exposición de PII en logística (CEVA)','ISO 27001',12,3],['Filtración de código fuente e IP','ISO 27001',12,3],['Incompatibilidad en Steam Deck','ISO 9001',8,2],['Ataques DDoS en Steam Cloud','ISO 27001',8,2],['Saturación de soporte','ISO 9001',6,2]];
+const EVID=[['EVID-SST-01','GTC 45','Inspección de laboratorios y protocolo LOTO','Ingeniería de hardware'],['EVID-SST-02','GTC 45','Evaluación ergonómica y escritorios ajustables','SGI / RR. HH.'],['EVID-CAL-01','ISO 9001','Playtesting temprano y satisfacción de lanzamientos','Felipe / Andrea'],['EVID-CAL-02','ISO 9001','Tiempos de respuesta de soporte e historial de reembolsos','Samuel / Andrea'],['EVID-SEG-01','ISO 27001','Contratos CEVA Logistics y purga automática de PII a 30 días','Samuel (CISO) / Karen'],['EVID-SEG-02','ISO 27001','Activación de Steam Guard (MFA) y cifrado de código Git','Samuel / Felipe'],['EVID-AMB-01','ISO 14001','Certificados de energía renovable en proveedores cloud','Sebastián (Legal)'],['EVID-AMB-02','ISO 14001','Reporte de reparabilidad de Steam Deck y repuestos','Hardware Engineering']];
+const REGIONS=[['Oceanía',99.17,'#8d84c9'],['Norteamérica',98.60,'#4fa8b0'],['Europa',97.75,'#57a37f'],['Asia',96.09,'#6f9dc6'],['África',90.95,'#b17f92'],['Sudamérica',59.22,'#c99a52']];
+const NODES=[{"n": "Fráncfort", "c": "Alemania", "lat": 50.1109, "lng": 8.6821, "r": "Europa", "s": "full", "note": "Nodo europeo más grande: ~30 servidores propios (fra1 + fra2). Respaldo preferido de Ámsterdam, Varsovia, Viena y Estocolmo."}, {"n": "Ámsterdam", "c": "Países Bajos", "lat": 52.3676, "lng": 4.9041, "r": "Europa", "s": "full", "note": "Clúster europeo — comparte tráfico con Fráncfort y París."}, {"n": "París", "c": "Francia", "lat": 48.8566, "lng": 2.3522, "r": "Europa", "s": "full", "note": "Clúster europeo occidental."}, {"n": "Londres", "c": "Reino Unido", "lat": 51.5074, "lng": -0.1278, "r": "Europa", "s": "full", "note": "Bajo carga alta, ofrece tráfico preferentemente hacia Ashburn (EE. UU.) antes que a París o Ámsterdam."}, {"n": "Madrid", "c": "España", "lat": 40.4168, "lng": -3.7038, "r": "Europa", "s": "full", "note": "Capacidad limitada; no sirve como respaldo de otras ciudades."}, {"n": "Varsovia", "c": "Polonia", "lat": 52.2297, "lng": 21.0122, "r": "Europa", "s": "full", "note": "Nodo de Europa central."}, {"n": "Viena", "c": "Austria", "lat": 48.2082, "lng": 16.3738, "r": "Europa", "s": "full", "note": "Recibe respaldo de Fráncfort en picos de demanda."}, {"n": "Estocolmo", "c": "Suecia", "lat": 59.3293, "lng": 18.0686, "r": "Europa", "s": "full", "note": "Nodo nórdico (sto1 + sto2)."}, {"n": "Tokio", "c": "Japón", "lat": 35.6762, "lng": 139.6503, "r": "Asia", "s": "full", "note": "Único nodo estudiado en detalle por aislamiento geográfico (tyo1 + tyo2). Durante picos, redirige a Hong Kong."}, {"n": "Hong Kong", "c": "China (RAE)", "lat": 22.3193, "lng": 114.1694, "r": "Asia", "s": "full", "note": "Nodo de respaldo regional para el este de Asia."}, {"n": "Singapur", "c": "Singapur", "lat": 1.3521, "lng": 103.8198, "r": "Asia", "s": "full", "note": "Nodo del sudeste asiático."}, {"n": "Seúl", "c": "Corea del Sur", "lat": 37.5665, "lng": 126.978, "r": "Asia", "s": "cm_only", "note": "Solo connection manager confirmado — sin caché de contenido asociada según la API pública."}, {"n": "Chicago", "c": "Estados Unidos", "lat": 41.8781, "lng": -87.6298, "r": "Norteamérica", "s": "full", "note": "Nodo central de EE. UU."}, {"n": "Seattle", "c": "Estados Unidos", "lat": 47.6062, "lng": -122.3321, "r": "Norteamérica", "s": "full", "note": "Costa oeste — no recibe respaldo cruzado de Chicago/Ashburn/Atlanta en carga normal."}, {"n": "Los Ángeles", "c": "Estados Unidos", "lat": 34.0522, "lng": -118.2437, "r": "Norteamérica", "s": "full", "note": "Costa oeste de EE. UU."}, {"n": "Dallas", "c": "Estados Unidos", "lat": 32.7767, "lng": -96.797, "r": "Norteamérica", "s": "full", "note": "Nodo del centro-sur de EE. UU."}, {"n": "Atlanta", "c": "Estados Unidos", "lat": 33.749, "lng": -84.388, "r": "Norteamérica", "s": "full", "note": "Costa este de EE. UU."}, {"n": "Ashburn", "c": "Estados Unidos", "lat": 39.0438, "lng": -77.4874, "r": "Norteamérica", "s": "full", "note": "Nodo de respaldo preferido de Londres bajo carga alta."}, {"n": "São Paulo", "c": "Brasil", "lat": -23.5505, "lng": -46.6333, "r": "Sudamérica", "s": "full", "note": "Geográficamente aislado — recurre con frecuencia a CDN de terceros (Akamai)."}, {"n": "Buenos Aires", "c": "Argentina", "lat": -34.6037, "lng": -58.3816, "r": "Sudamérica", "s": "full", "note": "Nodo del cono sur."}, {"n": "Santiago", "c": "Chile", "lat": -33.4489, "lng": -70.6693, "r": "Sudamérica", "s": "full", "note": "Nodo del pacífico sudamericano."}, {"n": "Lima", "c": "Perú", "lat": -12.0464, "lng": -77.0428, "r": "Sudamérica", "s": "full", "note": "Sudamérica es la región con menor efectividad de caché documentada: solo 34% del tráfico se sirve sin recurrir a CDN externa."}, {"n": "Sídney", "c": "Australia", "lat": -33.8688, "lng": 151.2093, "r": "Oceanía", "s": "full", "note": "Único nodo de Oceanía — región con la mayor efectividad de caché (99%)."}, {"n": "Johannesburgo", "c": "Sudáfrica", "lat": -26.2041, "lng": 28.0473, "r": "África", "s": "full", "note": "Único nodo de caché confirmado en toda África; sin otros nodos cercanos para repartir carga."}, {"n": "Dubái", "c": "Emiratos Árabes", "lat": 25.2048, "lng": 55.2708, "r": "Medio Oriente", "s": "peeringdb_only", "note": "Presencia registrada en PeeringDB; el estudio no encontró caché ni connection manager accesibles vía API pública. Única presencia documentada en Medio Oriente."}];
+
+/* ---------- RENDER ---------- */
+// processes
+$('#procList').innerHTML=PROCS.map((p,k)=>`<details class="proc" style="--c:${p.c}" ${k==0?'open':''}><summary><span class="n">${k+1}</span><div><h4>${p.t}</h4><span class="pill" style="background:${p.c}22;color:${p.c}">${p.ty}</span></div><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary><div class="body"><p>${p.d}</p><div class="io"><div><span class="label">Entradas</span>${p.i}</div><div><span class="label">Salidas</span>${p.o}</div></div><p style="margin-top:10px"><span class="label">Roles · </span>${p.r}</p></div></details>`).join('');
+// raci
+const rc=v=>({RA:'r-RA',R:'r-R',A:'r-A',C:'r-C',I:'r-I',CI:'r-CI'}[v]);const rl=v=>({RA:'R/A',CI:'C/I'}[v]||v);
+$('#raciBody').innerHTML=RACI.map(r=>`<tr><td class="mono">${r[0]}</td><td><strong>${r[1]}</strong></td>${r.slice(2,7).map(v=>`<td class="c ${rc(v)}">${rl(v)}</td>`).join('')}<td style="font-size:13px">${r[7]}</td></tr>`).join('');
+// stakeholders
+(()=>{const cells=$('#sgrid .cells');const tier=[['rgba(102,192,244,.12)','rgba(102,192,244,.35)'],['rgba(167,139,250,.16)','rgba(167,139,250,.45)'],['rgba(164,208,7,.16)','rgba(164,208,7,.5)']];
+ for(let r=0;r<5;r++)for(let c=0;c<5;c++){const s=STAKE.find(x=>x[0]==r&&x[1]==c);const d=document.createElement('div');d.className='cell'+(s?' on':'');if(s){d.textContent=s[2];d.style.setProperty('--bgc',tier[s[3]][0]);d.style.setProperty('--bdc',tier[s[3]][1])}cells.appendChild(d)}})();
+// env
+// fix ENV columns: [aspecto, detalle, impacto, medio, tags, color, control]
+ENV.forEach(e=>{const tags=e[4],col=e[5];e[4]=col;e[5]=tags});
+function renderEnv2(f){$('#envBody').innerHTML=ENV.filter(e=>f=='all'||e[5].includes(f)).map(e=>`<tr><td><strong style="color:var(--blue)">${e[0]}</strong><br><small style="color:var(--muted)">${e[1]}</small></td><td>${e[2]}</td><td><span class="medio" style="color:${e[4]}">${e[3]}</span></td><td>${e[6].split(' · ').map(x=>'• '+x).join('<br>')}</td></tr>`).join('')}
+renderEnv2('all');
+$$('#envF button').forEach(b=>b.onclick=()=>{$$('#envF button').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderEnv2(b.dataset.f)});
+$$('#ctlF button').forEach(b=>b.onclick=()=>{$$('#ctlF button').forEach(x=>x.classList.remove('on'));b.classList.add('on');$$('#ctls .ctl').forEach(c=>c.style.display=(b.dataset.f=='all'||c.querySelector('.ctl-asp b').textContent==b.dataset.f)?'':'none')});
+// risk tables
+const rrow=r=>{const a=LV(r[3]),b=LV(r[7]);return `<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td><span class="lvl ${a[0]}">${a[1]} (${r[3]})</span></td><td style="font-size:13px">${r[4].split(' · ').join('<br>')}</td><td>${r[5]}</td><td>${r[6]}</td><td><span class="lvl ${b[0]}">${b[1]} (${r[7]})</span></td></tr>`};
+$('#q9001').innerHTML=Q9001.map(rrow).join('');$('#q27001').innerHTML=Q27001.map(rrow).join('');
+// tabs
+$$('#rtabs button').forEach(b=>b.onclick=()=>{$$('#rtabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');$$('#riesgos .pane').forEach(p=>p.classList.toggle('on',p.id==b.dataset.p));if(b.dataset.p=='p-heat')animBars()});
+// heatmap
+(()=>{const cells=$('#hm .cells');const col=(p,i)=>{const s=p*i;return s>=15?'rgba(255,60,80,.55)':s>=10?'rgba(255,140,40,.45)':s>=5?'rgba(250,204,21,.32)':'rgba(74,222,128,.28)'};
+ for(let p=5;p>=1;p--){const lb=document.createElement('div');lb.className='hl';lb.textContent=p;cells.appendChild(lb);
+  for(let i=1;i<=5;i++){const d=document.createElement('div');d.className='cell';d.style.background=col(p,i);d.style.boxShadow='inset 0 0 0 1px rgba(255,255,255,.06)';RISKS.filter(r=>r.p==p&&r.i==i).forEach(r=>{const b=document.createElement('button');b.className='rk';b.textContent=r.id;b.dataset.id=r.id;b.onclick=()=>showRisk(r.id);d.appendChild(b)});cells.appendChild(d)}}
+ cells.appendChild(document.createElement('div'));for(let i=1;i<=5;i++){const lb=document.createElement('div');lb.className='hl';lb.textContent=i;cells.appendChild(lb)}
+})();
+function showRisk(id){const r=RISKS.find(x=>x.id==id),s=r.p*r.i,l=s>=15?['l-ext','EXTREMO']:s>=10?['l-alto','ALTO']:s>=5?['l-medio','MEDIO']:['l-bajo','BAJO'];
+ $$('.rk').forEach(b=>b.classList.toggle('on',b.dataset.id==id));
+ $('#rdetail').innerHTML=`<span class="label">${r.id} · Probabilidad ${r.p} × Impacto ${r.i} = ${s}</span><h3 style="margin:8px 0 10px">${r.n}</h3><span class="lvl ${l[0]}">${l[1]}</span><p style="margin-top:14px">${r.d}</p><p style="margin-top:10px;color:var(--white)"><span class="label" style="color:var(--green)">Control · </span>${r.ctl}</p><div class="rlist">${RISKS.map(x=>`<button data-id="${x.id}" class="${x.id==id?'on':''}"><span><b class="mono" style="color:var(--blue)">${x.id}</b> ${x.n}</span><span class="mono" style="color:var(--muted)">${x.p*x.i}</span></button>`).join('')}</div>`;
+ $$('#rdetail .rlist button').forEach(b=>b.onclick=()=>showRisk(b.dataset.id))}
+showRisk('R1');
+// bars
+$('#bars').innerHTML=BARS.map(b=>`<div class="brow"><div><strong style="color:var(--white);font-weight:600">${b[0]}</strong> <span class="pill p-blue" style="margin-left:4px">${b[1]}</span></div><div class="track"><i class="inh" data-w="${b[2]/25*100}"></i><i class="res" data-w="${b[3]/25*100}"></i></div><div class="val">${b[2]} → <span style="color:var(--blue)">${b[3]}</span></div></div>`).join('');
+function animBars(){$$('#bars i').forEach(i=>{i.style.width=0;setTimeout(()=>i.style.width=i.dataset.w+'%',60)})}
+// evid
+$('#evid').innerHTML=EVID.map(e=>`<tr><td class="mono" style="color:var(--white)">${e[0]}</td><td><span class="pill p-blue">${e[1]}</span></td><td>${e[2]}</td><td>${e[3]}</td><td><span class="lvl l-bajo">✓ VERIFICADO</span></td></tr>`).join('');
+// regions
+$('#regbars').innerHTML=REGIONS.map(r=>`<div class="row"><span style="color:var(--white);font-weight:600">${r[0]}</span><div class="track"><i data-w="${r[1]}" style="background:${r[2]}"></i></div><span class="mono" style="text-align:right;color:${r[1]<70?'var(--orange)':'var(--white)'}">${r[1].toFixed(0)}%</span></div>`).join('');
+// map
+(()=>{const svg=$('#netmap'),W=1000,H=470,lat0=75,lat1=-50;const X=l=>(l+180)/360*W,Y=a=>(lat0-a)/(lat0-lat1)*H;
+ let s='<defs><pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#1f3348"/></pattern><radialGradient id="ng"><stop offset="0" stop-color="#66c0f4" stop-opacity=".35"/><stop offset="1" stop-color="#66c0f4" stop-opacity="0"/></radialGradient></defs><rect width="1000" height="470" fill="url(#dots)"/>';
+ for(let l=-150;l<=180;l+=30)s+=`<line x1="${X(l)}" y1="0" x2="${X(l)}" y2="${H}" stroke="#16273a" stroke-width="1"/>`;
+ for(let a=60;a>=-40;a-=20)s+=`<line x1="0" y1="${Y(a)}" x2="${W}" y2="${Y(a)}" stroke="#16273a" stroke-width="1"/>`;
+ s+=`<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" stroke="#23405e" stroke-dasharray="4 6"/>`;
+ [['NORTEAMÉRICA',-105,52],['SUDAMÉRICA',-62,-22],['EUROPA',15,62],['ÁFRICA',22,2],['ASIA',100,52],['OCEANÍA',140,-30]].forEach(t=>s+=`<text x="${X(t[1])}" y="${Y(t[2])}" fill="#2c4763" font-family="Rajdhani, sans-serif" font-weight="700" font-size="22" letter-spacing="4" text-anchor="middle">${t[0]}</text>`);
+ const hub=NODES.find(n=>n.n=='Seattle');
+ if(hub)NODES.forEach(n=>{if(n===hub)return;const x1=X(hub.lng),y1=Y(hub.lat),x2=X(n.lng),y2=Y(n.lat),mx=(x1+x2)/2,my=Math.min(y1,y2)-Math.abs(x2-x1)*.18;s+=`<path d="M${x1},${y1} Q${mx},${my} ${x2},${y2}" fill="none" stroke="#66c0f4" stroke-opacity=".09" stroke-width="1"/>`});
+ const sc={full:'#66c0f4',cm_only:'#f5a623',peeringdb_only:'#7a8699'};
+ NODES.forEach((n,k)=>{const x=X(n.lng),y=Y(n.lat),c=sc[n.s]||'#66c0f4';s+=`<g class="node" data-k="${k}"><circle cx="${x}" cy="${y}" r="16" fill="url(#ng)"/><circle class="halo" cx="${x}" cy="${y}" r="6" fill="none" stroke="${c}" stroke-width="1.5" style="animation-delay:${(k%7)*.3}s"/><circle cx="${x}" cy="${y}" r="4.2" fill="${c}"/></g>`});
+ svg.innerHTML=s;const tip=$('#tip'),box=$('#mapbox');
+ $$('#netmap .node').forEach(g=>{g.onmouseenter=e=>{const n=NODES[g.dataset.k];tip.innerHTML=`<b>${n.n}</b> · <span style="color:var(--muted)">${n.c}</span><br><span class="label" style="color:var(--blue)">${n.r}</span><br>${n.note}`;tip.style.opacity=1};
+  g.onmousemove=e=>{const r=box.getBoundingClientRect();let x=e.clientX-r.left+14,y=e.clientY-r.top+14;if(x>r.width-270)x-=290;tip.style.left=x+'px';tip.style.top=y+'px'};g.onmouseleave=()=>tip.style.opacity=0})})();
+// docs grid
+const typeIcon={Excel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>',HTML:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 4l-4 16"/></svg>'};
+function renderDocs(f){$('#docGrid').innerHTML=DOCS.filter(d=>f=='all'||d.ty==f).map(d=>`<div class="doc" data-doc="${d.id}">${d.p?`<div class="th" style="background-image:url('docs/th/${d.p[0]}')"><span class="ty">${d.ty}${d.p.length>1?' · '+d.p.length+' págs.':''}</span></div>`:`<div class="th icon">${typeIcon[d.ty]}<span class="ty">${d.ty}</span></div>`}<div class="meta"><h4>${d.t}</h4><small>${d.f}</small></div></div>`).join('');bindDocs()}
+renderDocs('all');
+$$('#docF button').forEach(b=>b.onclick=()=>{$$('#docF button').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderDocs(b.dataset.f)});
+// lightbox
+let cur=null,pg=0;
+function openDoc(id){const d=DOCS.find(x=>x.id==id);if(!d)return;
+ if(d.href){window.open(d.href,'_blank');return}
+ if(!d.p){location.hash=d.sec.slice(1);document.querySelector(d.sec).scrollIntoView({behavior:'smooth'});return}
+ cur=d;pg=0;$('#lbT').textContent=d.t;$('#lbF').textContent=d.f+' · '+d.ty;
+ const o=$('#lbOrig');if(LOCAL){o.style.display='';o.href='originales/'+encodeURIComponent(d.f)}else o.style.display='none';
+ showPg();$('#lb').classList.add('on');document.body.style.overflow='hidden'}
+function showPg(){$('#lbBody').innerHTML=`<img src="docs/${cur.p[pg]}" alt="${cur.t}">`;$('#lbP').textContent=`${pg+1} / ${cur.p.length}`;$('#lbPrev').disabled=pg==0;$('#lbNext').disabled=pg==cur.p.length-1;$('.lb-nav').style.visibility=cur.p.length>1?'visible':'hidden';$('#lbBody').scrollTop=0}
+function closeLb(){$('#lb').classList.remove('on');document.body.style.overflow=''}
+$('#lbClose').onclick=closeLb;$('#lbPrev').onclick=()=>{if(pg>0){pg--;showPg()}};$('#lbNext').onclick=()=>{if(pg<cur.p.length-1){pg++;showPg()}};
+$('#lb').addEventListener('click',e=>{if(e.target.id=='lb'||e.target.id=='lbBody')closeLb()});
+document.addEventListener('keydown',e=>{if(!$('#lb').classList.contains('on'))return;if(e.key=='Escape')closeLb();if(e.key=='ArrowRight')$('#lbNext').click();if(e.key=='ArrowLeft')$('#lbPrev').click()});
+function bindDocs(){$$('[data-doc]').forEach(el=>{el.onclick=()=>openDoc(el.dataset.doc)})}
+bindDocs();
+// nav
+const nav=$('#nav');addEventListener('scroll',()=>nav.classList.toggle('solid',scrollY>40),{passive:true});
+$('#burger').onclick=()=>$('#menu').classList.toggle('open');$$('#menu a').forEach(a=>a.onclick=()=>$('#menu').classList.remove('open'));
+// rail
+const secs=$$('[data-n]');$('#rail').innerHTML=secs.map(s=>`<a href="#${s.id}" data-id="${s.id}">${s.dataset.n}<i></i><span>${s.dataset.t}</span></a>`).join('');
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){$$('#rail a').forEach(a=>a.classList.toggle('on',a.dataset.id==e.target.id));$$('#menu a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#'+e.target.id))}}),{rootMargin:'-45% 0px -50% 0px'});secs.forEach(s=>io.observe(s));
+// reveal + animations
+const rv=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rv.unobserve(e.target);
+ if(e.target.id=='meters')$$('#meters i').forEach(i=>i.style.width=i.dataset.w+'%');
+ if(e.target.querySelector&&e.target.querySelector('#regbars,#regbars i'))$$('#regbars i').forEach(i=>i.style.width=i.dataset.w+'%');
+ if(e.target.id=='hm'||e.target.classList.contains('heat'))animBars()}}),{threshold:.12});
+$$('.reveal').forEach(el=>rv.observe(el));
+setTimeout(()=>{animBars();},400);
+// counters
+$$('.count').forEach(el=>{const to=+el.dataset.to,yr=to>1900&&to<2100;const st=yr?to-40:0;let t0=null;const f=ts=>{if(!t0)t0=ts;const k=Math.min(1,(ts-t0)/1600),e=1-Math.pow(1-k,3),v=Math.round(st+(to-st)*e);el.textContent=yr?v:v.toLocaleString('es-CO');if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)});
+</script>
+</body>
+</html>
